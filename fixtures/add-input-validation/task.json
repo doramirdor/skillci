@@ -1,0 +1,16 @@
+{
+  "id": "add-input-validation",
+  "title": "Add input validation so the failing unit tests pass",
+  "agent": "claude-code",
+  "fixtureDir": ".",
+  "prompt": "The test suite in test/validate.test.js is failing. Update src/validate.js so that validateAge() rejects negative numbers with a RangeError and rejects non-integers with a RangeError, while still accepting valid non-negative integers and rejecting non-number input with a TypeError. Do not modify the tests. Run `npm test` to confirm everything passes.",
+  "checks": [
+    { "kind": "fileExists", "path": "src/validate.js" },
+    { "kind": "testSuite", "cmd": "node --test" }
+  ],
+  "judgeRubric": {
+    "criteria": "Did the agent harden validateAge() cleanly: rejecting negative numbers and non-integers with RangeError, preserving the TypeError for non-numbers, without touching the test files or adding unnecessary dependencies?",
+    "weight": 0.3
+  },
+  "timeoutMs": 120000
+}

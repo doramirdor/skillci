@@ -1,0 +1,34 @@
+{
+  "name": "skillci",
+  "version": "0.1.0",
+  "description": "A CI/CD layer that tests, validates, and promotes coding-agent configuration artifacts (skills, hooks, rules, instructions) before teams trust them in Claude Code, Cursor, or Codex.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "skillci": "./dist/cli/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "demo": "tsx src/cli/index.ts run --demo"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "commander": "^13.1.0",
+    "execa": "^9.5.2",
+    "picocolors": "^1.1.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
+}

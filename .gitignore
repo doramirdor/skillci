@@ -1,0 +1,8 @@
+node_modules
+dist
+.skillci-cache
+*.log
+.env
+
+# Local Claude Code harness settings (personal, not shared)
+.claude/settings.local.json

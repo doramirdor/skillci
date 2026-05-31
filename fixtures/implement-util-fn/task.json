@@ -1,0 +1,16 @@
+{
+  "id": "implement-util-fn",
+  "title": "Implement the slugify() utility function",
+  "agent": "claude-code",
+  "fixtureDir": ".",
+  "prompt": "Implement the slugify() function in src/slugify.js. It should lowercase the input, trim it, and replace any run of non-alphanumeric characters with a single hyphen, with no leading or trailing hyphens. Verify your work by running `node check.js`, which must exit 0.",
+  "checks": [
+    { "kind": "fileExists", "path": "src/slugify.js" },
+    { "kind": "command", "cmd": "node check.js", "expectExitZero": true }
+  ],
+  "judgeRubric": {
+    "criteria": "Is the slugify implementation correct and idiomatic — lowercasing, trimming, and collapsing non-alphanumeric runs into single hyphens without leading/trailing hyphens — using built-in string methods rather than adding dependencies?",
+    "weight": 0.25
+  },
+  "timeoutMs": 120000
+}

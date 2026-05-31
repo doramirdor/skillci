@@ -1,0 +1,13 @@
+{
+  "id": "fix-readme-typo",
+  "title": "Fix the typos in README.md",
+  "agent": "claude-code",
+  "fixtureDir": ".",
+  "prompt": "README.md contains two spelling mistakes: 'libary' should be 'library' and 'recieve' should be 'receive'. Fix both typos in README.md and change nothing else.",
+  "checks": [
+    { "kind": "fileExists", "path": "README.md" },
+    { "kind": "fileContains", "path": "README.md", "substring": "library" },
+    { "kind": "fileContains", "path": "README.md", "substring": "receive" }
+  ],
+  "timeoutMs": 60000
+}

@@ -1,0 +1,71 @@
+# SkillCI promotion gate — EXAMPLE TEMPLATE
+#
+# Copy this into a repo that holds agent config (skills/hooks/rules/instructions)
+# to gate changes: when a PR touches the config, SkillCI runs the candidate
+# (the PR's config) against the baseline (the target branch's config) over your
+# sandboxed tasks and fails the check if the change regresses outcomes.
+#
+# Rename to `.github/workflows/skillci-gate.yml` and adjust the paths/agent below.
+#
+# Requirements:
+#   - SkillCI installed (here we run it from this checkout; in your repo use
+#     `npx skillci` once published, or add it as a dev dependency).
+#   - For REAL agent runs (not the mock), provide the agent CLI + key, e.g.
+#     ANTHROPIC_API_KEY for the claude-code adapter and the LLM judge.
+
+name: SkillCI Gate (example)
+
+on:
+  pull_request:
+    # Only run when agent config actually changes. Tune to your layout.
+    paths:
+      - '.claude/**'
+      - 'CLAUDE.md'
+      - '.cursor/**'
+      - '.cursorrules'
+      - 'AGENTS.md'
+
+permissions:
+  contents: read
+  pull-requests: write   # so SkillCI can comment / open a promotion PR if desired
+
+jobs:
+  gate:
+    name: baseline vs candidate
+    runs-on: ubuntu-latest
+    steps:
+      # The candidate config = the PR head.
+      - name: Checkout candidate (PR head)
+        uses: actions/checkout@v4
+        with:
+          path: candidate
+
+      # The baseline config = the PR target branch.
+      - name: Checkout baseline (target branch)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: baseline
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Install SkillCI. Replace with `npm i -g skillci` once published.
+      - name: Install SkillCI
+        run: |
+          git clone --depth 1 https://github.com/YOUR_ORG/skillci skillci-tool
+          cd skillci-tool && npm ci && npm run build && npm link
+
+      - name: Run SkillCI gate
+        env:
+          # Provide these for real (non-mock) agent + judge runs:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Exits non-zero on a `regressed` verdict, blocking the PR.
+          # Drop --open-pr in CI; promotion is dry-run unless you opt in.
+          skillci run \
+            --agent claude-code \
+            --baseline baseline \
+            --candidate candidate \
+            --tasks candidate/skillci-tasks
