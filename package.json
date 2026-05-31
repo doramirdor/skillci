@@ -5,18 +5,23 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "skillci": "./dist/cli/index.js"
+    "skillci": "dist/cli/index.js"
   },
   "engines": {
     "node": ">=20"
   },
+  "files": [
+    "dist",
+    "fixtures"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "demo": "tsx src/cli/index.ts run --demo"
+    "demo": "tsx src/cli/index.ts run --demo",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -30,5 +35,8 @@
     "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "vitest": "^3.0.7"
-  }
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": ""
 }

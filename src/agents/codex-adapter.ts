@@ -5,10 +5,12 @@
  * output format varies by version, so this adapter tries JSON first and falls
  * back to raw text with zeroed telemetry.
  *
- * Availability requires the `codex` binary on PATH. (An OPENAI_API_KEY is also
- * required for real runs; we surface it as a soft signal but treat the binary
- * as the hard gate, matching the spec's "best-effort" framing.) When the binary
- * is absent, `run()` throws a typed {@link AgentUnavailableError}.
+ * Availability requires BOTH the `codex` binary on PATH and an `OPENAI_API_KEY`
+ * in the environment — mirroring {@link ClaudeCodeAdapter} so the adapter
+ * degrades gracefully (throws a typed {@link AgentUnavailableError}) rather than
+ * spawning a process that would block or fail without auth. A run that times
+ * out or exits non-zero with no parseable telemetry surfaces a typed error too,
+ * instead of a fabricated zeroed-telemetry "success".
  */
 
 import { execa } from 'execa';
@@ -17,10 +19,11 @@ import type {
   AgentRunArgs,
   AgentRunResult,
 } from '../core/index.js';
-import { hasBinary } from './availability.js';
-import { AgentUnavailableError } from './errors.js';
+import { hasBinary, hasEnv } from './availability.js';
+import { AgentUnavailableError, AgentOutputParseError } from './errors.js';
 
 const BINARY = 'codex';
+const API_KEY_ENV = 'OPENAI_API_KEY';
 
 /** Loosely-typed fields `codex exec` *may* emit as JSON. */
 interface CodexJsonEnvelope {
@@ -42,10 +45,18 @@ export class CodexAdapter implements AgentAdapter {
   readonly kind = 'codex' as const;
 
   async isAvailable(): Promise<boolean> {
+    if (!hasEnv(API_KEY_ENV)) return false;
     return hasBinary(BINARY);
   }
 
   async run(args: AgentRunArgs): Promise<AgentRunResult> {
+    if (!hasEnv(API_KEY_ENV)) {
+      throw new AgentUnavailableError(
+        this.kind,
+        'missing-api-key',
+        `Codex adapter unavailable: ${API_KEY_ENV} is not set.`,
+      );
+    }
     if (!(await hasBinary(BINARY))) {
       throw new AgentUnavailableError(
         this.kind,
@@ -62,6 +73,8 @@ export class CodexAdapter implements AgentAdapter {
       reject: false,
       timeout: task.timeoutMs,
       env: { ...process.env },
+      // Non-interactive: never let `codex exec` block reading from a TTY.
+      input: '',
     });
 
     const wallClockMs = Date.now() - started;
@@ -82,6 +95,26 @@ export class CodexAdapter implements AgentAdapter {
       };
     }
 
+    // No parseable telemetry. Do NOT fabricate a zeroed "success" for a run
+    // that timed out or exited non-zero — surface a typed error so callers can
+    // distinguish a real (empty-but-clean) run from a broken one.
+    if (result.timedOut) {
+      throw new AgentOutputParseError(
+        this.kind,
+        `'${BINARY} exec' timed out after ${task.timeoutMs}ms with no parseable telemetry`,
+        { stdout: result.stdout, stderr: result.stderr, exitCode: result.exitCode, timedOut: true },
+      );
+    }
+    if (typeof result.exitCode === 'number' && result.exitCode !== 0) {
+      throw new AgentOutputParseError(
+        this.kind,
+        `'${BINARY} exec' exited ${result.exitCode} with no parseable telemetry`,
+        { stdout: result.stdout, stderr: result.stderr, exitCode: result.exitCode },
+      );
+    }
+
+    // Clean exit, plain-text output: a legitimate best-effort run with zeroed
+    // telemetry (codex's text format does not expose token/cost counts).
     return {
       transcript: result.stdout || result.stderr,
       toolCalls: 0,

@@ -17,7 +17,7 @@ import type {
   AgentRunResult,
 } from '../core/index.js';
 import { hasBinary } from './availability.js';
-import { AgentUnavailableError } from './errors.js';
+import { AgentUnavailableError, AgentOutputParseError } from './errors.js';
 
 const BINARY = 'cursor-agent';
 
@@ -82,7 +82,25 @@ export class CursorAdapter implements AgentAdapter {
       };
     }
 
-    // Fallback: no parseable JSON — return raw text with zeroed telemetry.
+    // No parseable telemetry. A timed-out or non-zero run is NOT a success —
+    // surface a typed error rather than fabricating zeroed-telemetry success.
+    if (result.timedOut) {
+      throw new AgentOutputParseError(
+        this.kind,
+        `'${BINARY}' timed out after ${task.timeoutMs}ms with no parseable telemetry`,
+        { stdout: result.stdout, stderr: result.stderr, exitCode: result.exitCode, timedOut: true },
+      );
+    }
+    if (typeof result.exitCode === 'number' && result.exitCode !== 0) {
+      throw new AgentOutputParseError(
+        this.kind,
+        `'${BINARY}' exited ${result.exitCode} with no parseable telemetry`,
+        { stdout: result.stdout, stderr: result.stderr, exitCode: result.exitCode },
+      );
+    }
+
+    // Clean exit, plain-text output — a legitimate best-effort run with zeroed
+    // telemetry (cursor's text format does not expose token/cost counts).
     return {
       transcript: result.stdout || result.stderr,
       toolCalls: 0,

@@ -9,7 +9,7 @@
 export { MockAgentAdapter, planWrites, computeTelemetry } from './mock-adapter.js';
 export type { MockAgentAdapterOptions } from './mock-adapter.js';
 
-export { ClaudeCodeAdapter } from './claude-adapter.js';
+export { ClaudeCodeAdapter, parseClaudeEnvelope } from './claude-adapter.js';
 export { CursorAdapter } from './cursor-adapter.js';
 export { CodexAdapter } from './codex-adapter.js';
 

@@ -8,11 +8,19 @@
  *
  * HARD RULE (see contracts + README): a candidate can only be `improved` when
  * it has a net-positive aggregate composite gain AND zero hard regressions. A
- * hard regression is either:
- *   - any drop in objective pass-rate on any task (when
- *     `thresholds.objectiveDropIsRegression` is true), or
+ * hard regression is any of:
+ *   - a drop in the objective dimension on any task — measured as EITHER a drop
+ *     in pass-rate OR a drop in the absolute number of passed checks (when
+ *     `thresholds.objectiveDropIsRegression` is true). Both are gated so that
+ *     shrinking/removing checks while holding the ratio constant cannot mask a
+ *     regression, and so a baseline task that the candidate fails to produce
+ *     (candidatePassed = 0) counts as a true drop rather than a vacuous 1.0.
  *   - a per-task composite drop whose magnitude exceeds
  *     `thresholds.regressionCompositeDrop`.
+ *   - a baseline task that is entirely absent from the candidate run (the
+ *     candidate failed to even produce a result for it).
+ *   - any non-finite (NaN/Infinity) composite or objective value — corrupted
+ *     data fails closed and is never promoted or silently neutralized.
  * If ANY hard regression exists, the overall verdict is `regressed` and every
  * regression is listed explicitly — regardless of gains elsewhere.
  */
@@ -39,6 +47,8 @@ interface ClassifiedDelta extends PerTaskDelta {
   candidateObjectiveRate: number;
   /** True when the objective pass-rate dropped (candidate < baseline). */
   objectiveRateDropped: boolean;
+  /** True when the absolute number of passed checks dropped (candidate < baseline). */
+  objectivePassedDropped: boolean;
   /** True when the composite dropped beyond the regression threshold. */
   compositeHardDrop: boolean;
   /** Human-readable reasons this task is a hard regression (may be empty). */
@@ -86,9 +96,22 @@ function classifyTask(
   const objectiveDelta = candidatePassed - baselinePassed;
 
   const baselineObjectiveRate = baseline ? objectiveRate(baseline) : 1;
-  const candidateObjectiveRate = candidate ? objectiveRate(candidate) : 1;
+  // A baseline task that the candidate never produced has effectively a 0
+  // pass-rate (it failed to even run), NOT a vacuous 1.0. Treating it as 1.0
+  // would hide the regression behind the composite-only threshold.
+  const candidateMissing = baseline !== undefined && candidate === undefined;
+  const candidateObjectiveRate = candidate
+    ? objectiveRate(candidate)
+    : candidateMissing
+      ? 0
+      : 1;
   const objectiveRateDropped =
     round(candidateObjectiveRate) < round(baselineObjectiveRate);
+  // Absolute drop in passed checks. Measuring only the rate lets a candidate
+  // shrink/remove checks (keeping the ratio constant) while silently passing
+  // fewer of them. A missing candidate has candidatePassed = 0 < baselinePassed,
+  // so this branch also catches dropped tasks.
+  const objectivePassedDropped = candidatePassed < baselinePassed;
 
   let judgeDelta: number | undefined;
   if (baseline?.judge && candidate?.judge) {
@@ -104,10 +127,35 @@ function classifyTask(
   const compositeHardDrop =
     compositeDelta < 0 && Math.abs(compositeDelta) > thresholds.regressionCompositeDrop;
 
+  // Fail closed on corrupted data: a non-finite composite/objective value can
+  // never be promoted or silently neutralized.
+  const nonFinite =
+    !Number.isFinite(baselineComposite) ||
+    !Number.isFinite(candidateComposite) ||
+    !Number.isFinite(baselinePassed) ||
+    !Number.isFinite(candidatePassed);
+
   const regressionReasons: string[] = [];
-  if (thresholds.objectiveDropIsRegression && objectiveRateDropped) {
+
+  if (candidateMissing) {
     regressionReasons.push(
-      `task "${taskId}": objective pass-rate dropped ` +
+      `task "${taskId}": present in baseline but absent from candidate run ` +
+        `(candidate produced no result)`,
+    );
+  }
+  if (nonFinite) {
+    regressionReasons.push(
+      `task "${taskId}": non-finite score(s) detected ` +
+        `(baselineComposite=${baselineComposite}, candidateComposite=${candidateComposite}, ` +
+        `baselinePassed=${baselinePassed}, candidatePassed=${candidatePassed}) — failing closed`,
+    );
+  }
+  if (
+    thresholds.objectiveDropIsRegression &&
+    (objectiveRateDropped || objectivePassedDropped)
+  ) {
+    regressionReasons.push(
+      `task "${taskId}": objective regressed ` +
         `(${baselinePassed}/${baseline?.objective.total ?? 0} -> ` +
         `${candidatePassed}/${candidate?.objective.total ?? 0})`,
     );
@@ -142,6 +190,7 @@ function classifyTask(
     baselineObjectiveRate,
     candidateObjectiveRate,
     objectiveRateDropped,
+    objectivePassedDropped,
     compositeHardDrop,
     regressionReasons,
     classification,
@@ -232,6 +281,14 @@ export function compareOutcomes(
   let verdict: Verdict;
   if (hasHardRegression) {
     verdict = 'regressed';
+  } else if (!Number.isFinite(netCompositeGain)) {
+    // Defensive: per-task classification already flags non-finite scores, but
+    // guard the aggregate too so corrupted data can never reach the `improved`
+    // branch below.
+    verdict = 'regressed';
+    regressions.push(
+      `aggregate composite is non-finite (${netCompositeGain}) — failing closed`,
+    );
   } else if (netCompositeGain >= resolved.minCompositeGain) {
     verdict = 'improved';
   } else if (netCompositeGain <= -resolved.minCompositeGain) {

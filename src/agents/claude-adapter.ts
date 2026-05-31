@@ -36,6 +36,56 @@ interface ClaudeJsonEnvelope {
 const BINARY = 'claude';
 const API_KEY_ENV = 'ANTHROPIC_API_KEY';
 
+/**
+ * Pure normalizer for the `claude --output-format json` envelope. Exported so
+ * the success path (telemetry parsing) is unit-testable without spawning a CLI
+ * or hitting the network. Throws {@link AgentOutputParseError} when stdout is
+ * not valid JSON.
+ *
+ * Token accounting sums input + cache-read + cache-creation into `inputTokens`,
+ * maps `total_cost_usd` -> `costUsd` and `num_turns` -> `steps`. Missing fields
+ * default to 0; a parse failure surfaces a typed error rather than a silent
+ * zeroed-success.
+ */
+export function parseClaudeEnvelope(
+  stdout: string,
+  stderr: string,
+  exitCode: number | undefined,
+  wallClockMs: number,
+): AgentRunResult {
+  let parsed: ClaudeJsonEnvelope;
+  try {
+    parsed = JSON.parse(stdout) as ClaudeJsonEnvelope;
+  } catch (err) {
+    throw new AgentOutputParseError(
+      'claude-code',
+      `failed to parse 'claude --output-format json' output: ${(err as Error).message}`,
+      { stdout, stderr, exitCode },
+    );
+  }
+
+  const usage = parsed.usage ?? {};
+  const inputTokens =
+    (usage.input_tokens ?? 0) +
+    (usage.cache_read_input_tokens ?? 0) +
+    (usage.cache_creation_input_tokens ?? 0);
+  const outputTokens = usage.output_tokens ?? 0;
+  const steps = parsed.num_turns ?? 0;
+
+  return {
+    transcript: typeof parsed.result === 'string' ? parsed.result : stdout,
+    // The JSON envelope does not break out tool-call counts; approximate with
+    // turns (each turn may carry tool use). Callers treat this as best-effort.
+    toolCalls: steps,
+    inputTokens,
+    outputTokens,
+    costUsd: parsed.total_cost_usd ?? 0,
+    steps,
+    wallClockMs,
+    raw: parsed,
+  };
+}
+
 export class ClaudeCodeAdapter implements AgentAdapter {
   readonly kind = 'claude-code' as const;
 
@@ -63,37 +113,12 @@ export class ClaudeCodeAdapter implements AgentAdapter {
 
     const wallClockMs = Date.now() - started;
 
-    let parsed: ClaudeJsonEnvelope;
-    try {
-      parsed = JSON.parse(result.stdout) as ClaudeJsonEnvelope;
-    } catch (err) {
-      throw new AgentOutputParseError(
-        this.kind,
-        `failed to parse 'claude --output-format json' output: ${(err as Error).message}`,
-        { stdout: result.stdout, stderr: result.stderr, exitCode: result.exitCode },
-      );
-    }
-
-    const usage = parsed.usage ?? {};
-    const inputTokens =
-      (usage.input_tokens ?? 0) +
-      (usage.cache_read_input_tokens ?? 0) +
-      (usage.cache_creation_input_tokens ?? 0);
-    const outputTokens = usage.output_tokens ?? 0;
-    const steps = parsed.num_turns ?? 0;
-
-    return {
-      transcript: typeof parsed.result === 'string' ? parsed.result : result.stdout,
-      // The JSON envelope does not break out tool-call counts; approximate with
-      // turns (each turn may carry tool use). Callers treat this as best-effort.
-      toolCalls: steps,
-      inputTokens,
-      outputTokens,
-      costUsd: parsed.total_cost_usd ?? 0,
-      steps,
+    return parseClaudeEnvelope(
+      result.stdout,
+      result.stderr,
+      result.exitCode,
       wallClockMs,
-      raw: parsed,
-    };
+    );
   }
 }
 

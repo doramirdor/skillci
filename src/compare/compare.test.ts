@@ -158,7 +158,7 @@ describe('compareOutcomes — regressed (HARD RULES)', () => {
 
     expect(c.verdict).toBe('regressed');
     expect(c.regressions.length).toBeGreaterThan(0);
-    expect(c.regressions[0]).toContain('objective pass-rate dropped');
+    expect(c.regressions[0]).toContain('objective regressed');
     expect(deltaFor(c, 't1').isRegression).toBe(true);
     expect(shouldPromote(c)).toBe(false);
   });
@@ -217,6 +217,58 @@ describe('compareOutcomes — regressed (HARD RULES)', () => {
 
     expect(c.verdict).toBe('neutral');
     expect(c.regressions).toEqual([]);
+  });
+
+  it('HARD RULE: an absolute drop in passed checks regresses even when the rate holds', () => {
+    // Baseline: 2/4 passed (rate 0.5). Candidate shrinks the check set to 1/2
+    // (same rate 0.5) but passes fewer checks in absolute terms, and gains
+    // composite. The rate-only gate would miss this; the count gate catches it.
+    const baseline = outcome('baseline', [
+      score('t1', { composite: 0.4, passed: 2, total: 4 }),
+    ]);
+    const candidate = outcome('candidate', [
+      score('t1', { composite: 0.95, passed: 1, total: 2 }),
+    ]);
+
+    const c = compareOutcomes(baseline, candidate);
+
+    expect(c.verdict).toBe('regressed');
+    expect(c.regressions.some((r) => r.includes('objective regressed'))).toBe(true);
+    expect(deltaFor(c, 't1').isRegression).toBe(true);
+    expect(shouldPromote(c)).toBe(false);
+  });
+
+  it('HARD RULE: a baseline task absent from candidate is an explicit regression', () => {
+    // Even with a tiny composite so the composite-drop threshold alone would
+    // not fire, a dropped task must be flagged explicitly.
+    const baseline = outcome('baseline', [
+      score('t1', { composite: 0.5, passed: 3, total: 3 }),
+      score('t2', { composite: 0.02, passed: 1, total: 1 }),
+    ]);
+    const candidate = outcome('candidate', [
+      score('t1', { composite: 0.5, passed: 3, total: 3 }),
+    ]);
+
+    const c = compareOutcomes(baseline, candidate);
+
+    expect(c.verdict).toBe('regressed');
+    expect(
+      c.regressions.some((r) => r.includes('absent from candidate run')),
+    ).toBe(true);
+    expect(deltaFor(c, 't2').isRegression).toBe(true);
+    expect(shouldPromote(c)).toBe(false);
+  });
+
+  it('HARD RULE: a non-finite (NaN) composite fails closed rather than neutralizing', () => {
+    const baseline = outcome('baseline', [score('t1', { composite: 0.5 })]);
+    const candidate = outcome('candidate', [score('t1', { composite: Number.NaN })]);
+
+    const c = compareOutcomes(baseline, candidate);
+
+    expect(c.verdict).toBe('regressed');
+    expect(c.regressions.some((r) => r.includes('non-finite'))).toBe(true);
+    expect(deltaFor(c, 't1').isRegression).toBe(true);
+    expect(shouldPromote(c)).toBe(false);
   });
 });
 
