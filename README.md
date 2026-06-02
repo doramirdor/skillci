@@ -192,6 +192,16 @@ subscription. Honest about where it stands:
 - 🚧 Cursor / Codex adapters are implemented but not yet live-validated.
 - 🚧 Larger task/fixture libraries; container sandbox backend; hosted dashboards.
 
+## Documentation
+
+Full guides live in [`docs/`](./docs/):
+
+- [Getting Started](./docs/getting-started.md) — install, offline demo, first live run
+- [Concepts](./docs/concepts.md) — baseline/candidate, verdict model, the gate
+- [CLI Reference](./docs/cli-reference.md) · [Writing Tasks](./docs/writing-tasks.md) · [Scoring](./docs/scoring.md)
+- [Agents & Auth](./docs/agents-and-auth.md) · [CI Integration](./docs/ci-integration.md)
+- [Architecture](./docs/architecture.md) · [Troubleshooting](./docs/troubleshooting.md)
+
 ## Development
 
 ```bash
