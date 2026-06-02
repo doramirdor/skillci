@@ -39,6 +39,11 @@ A new instruction in a shared `CLAUDE.md` can quietly make the agent slower,
 pricier, or worse at the job, and nobody notices for weeks. Agent config is now
 a production artifact. **SkillCI is regression testing for it.**
 
+> **Despite the name, SkillCI isn't only about skills.** It evaluates *every*
+> kind of agent config artifact — skills, hooks, rules, instructions
+> (`CLAUDE.md` / `AGENTS.md`), slash commands, and settings — across Claude
+> Code, Cursor, and Codex. "Skill" is just the headline artifact.
+
 ## What it does
 
 ```
