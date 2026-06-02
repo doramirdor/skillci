@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SkillCI — CI for your AI config</title>
+<meta name="description" content="CI/CD for coding-agent configuration. Test, score, and gate changes to your skills, hooks, rules, and CLAUDE.md before you trust them in Claude Code, Cursor, or Codex." />
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="SkillCI — CI for your AI config" />
+<meta property="og:description" content="Regression testing for your agent configuration. Test it before you trust it." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/banner.svg" />
+
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#0f172a; --panel:#111a2e; --line:#1e293b;
+    --txt:#e8eef9; --muted:#94a3b8; --cyan:#22d3ee; --indigo:#6366f1;
+    --code:#0a1020;
+    --grad:linear-gradient(120deg,#22d3ee,#6366f1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 70% -10%, #15233f 0%, var(--bg) 55%);
+    color:var(--txt); font:16px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--cyan); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1040px; margin:0 auto; padding:0 24px}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* nav */
+  nav{position:sticky; top:0; z-index:10; backdrop-filter:blur(8px);
+      background:rgba(11,18,32,.72); border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex; align-items:center; gap:14px; height:62px}
+  nav img{width:30px;height:30px}
+  nav .brand{font-weight:800; letter-spacing:-.3px; font-size:18px}
+  nav .brand b{color:var(--cyan)}
+  nav .sp{flex:1}
+  nav .links a{color:var(--muted); margin-left:22px; font-size:14.5px; font-weight:600}
+  nav .links a:hover{color:var(--txt); text-decoration:none}
+
+  /* hero */
+  header{padding:84px 0 36px; text-align:center}
+  header .mark{width:96px;height:96px;margin-bottom:22px}
+  h1{font-size:clamp(34px,6vw,60px); line-height:1.05; margin:0 0 16px; letter-spacing:-1.5px; font-weight:850}
+  h1 .g{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .lede{font-size:clamp(17px,2.4vw,21px); color:var(--muted); max-width:680px; margin:0 auto 30px}
+  .cta{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+  .btn{display:inline-flex; align-items:center; gap:9px; padding:13px 22px; border-radius:12px;
+       font-weight:700; font-size:15px; border:1px solid transparent}
+  .btn.primary{background:var(--grad); color:#06121f}
+  .btn.primary:hover{filter:brightness(1.08); text-decoration:none}
+  .btn.ghost{border-color:var(--line); color:var(--txt); background:#0e1729}
+  .btn.ghost:hover{border-color:#33415c; text-decoration:none}
+  .badges{margin-top:26px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap}
+  .badge{font-size:12.5px; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:5px 12px; background:#0e1729}
+  .badge b{color:var(--cyan)}
+
+  /* demo */
+  .demo{margin:46px auto 8px; max-width:900px}
+  .demo img{width:100%; border-radius:14px; border:1px solid var(--line); box-shadow:0 24px 70px -30px rgba(34,211,238,.35)}
+  .demo .cap{text-align:center; color:var(--muted); font-size:13.5px; margin-top:12px}
+
+  section{padding:54px 0; border-top:1px solid var(--line)}
+  section h2{font-size:clamp(24px,3.4vw,32px); margin:0 0 10px; letter-spacing:-.6px}
+  section .sub{color:var(--muted); max-width:720px; margin:0 0 30px}
+
+  .grid{display:grid; gap:18px; grid-template-columns:repeat(3,1fr)}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px}
+  .card h3{margin:0 0 8px; font-size:18px; display:flex; align-items:center; gap:9px}
+  .card .w{font:12px ui-monospace,monospace; color:var(--indigo); border:1px solid var(--line); border-radius:6px; padding:1px 7px}
+  .card p{margin:0; color:var(--muted); font-size:14.5px}
+
+  /* flow */
+  .flow{background:var(--code); border:1px solid var(--line); border-radius:14px; padding:22px; overflow-x:auto}
+  .flow pre{margin:0; color:#aeb8cc; font-size:13px; line-height:1.5}
+
+  /* steps */
+  ol.steps{counter-reset:s; list-style:none; padding:0; margin:0; display:grid; gap:14px}
+  ol.steps li{position:relative; padding:16px 18px 16px 56px; background:var(--panel); border:1px solid var(--line); border-radius:12px; color:var(--muted)}
+  ol.steps li b{color:var(--txt)}
+  ol.steps li::before{counter-increment:s; content:counter(s); position:absolute; left:16px; top:14px;
+    width:26px;height:26px; border-radius:8px; background:var(--grad); color:#06121f; font-weight:800; font-size:14px;
+    display:grid; place-items:center}
+
+  pre.code{background:var(--code); border:1px solid var(--line); border-radius:12px; padding:18px 20px; overflow-x:auto; font-size:13.5px; line-height:1.65; color:#cdd7ea}
+  pre.code .c{color:#5c6b86}
+  pre.code .k{color:var(--cyan)}
+
+  table.agents{width:100%; border-collapse:collapse; font-size:14.5px}
+  table.agents th,table.agents td{text-align:left; padding:12px 12px; border-bottom:1px solid var(--line)}
+  table.agents th{color:var(--muted); font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.4px}
+  table.agents td code{color:var(--cyan); font-size:13px}
+
+  .note{margin-top:22px; padding:14px 18px; border-left:3px solid var(--indigo); background:#0e1729; border-radius:0 10px 10px 0; color:var(--muted); font-size:14px}
+
+  footer{padding:46px 0 70px; border-top:1px solid var(--line); color:var(--muted); font-size:14px}
+  footer .wrap{display:flex; gap:18px; align-items:center; flex-wrap:wrap}
+  footer .sp{flex:1}
+  footer a{color:var(--muted); font-weight:600}
+  footer a:hover{color:var(--txt)}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <img src="assets/logo.svg" alt="SkillCI" />
+  <span class="brand">Skill<b>CI</b></span>
+  <span class="sp"></span>
+  <span class="links">
+    <a href="#how">How it works</a>
+    <a href="#start">Quickstart</a>
+    <a href="https://github.com/doramirdor/skillci/tree/main/docs">Docs</a>
+    <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  </span>
+</div></nav>
+
+<header><div class="wrap">
+  <img class="mark" src="assets/logo.svg" alt="" />
+  <h1>CI for your <span class="g">AI config</span></h1>
+  <p class="lede">SkillCI tests, scores, and gates changes to your skills, hooks, rules, and
+    <code>CLAUDE.md</code> — <em>before</em> you trust them in Claude Code, Cursor, or Codex.</p>
+  <div class="cta">
+    <a class="btn primary" href="#start">Get started</a>
+    <a class="btn ghost" href="https://github.com/doramirdor/skillci">★ View on GitHub</a>
+  </div>
+  <div class="badges">
+    <span class="badge"><b>225</b> tests passing</span>
+    <span class="badge">TypeScript · strict</span>
+    <span class="badge">runs on a Claude <b>subscription</b> — no API key</span>
+    <span class="badge">MIT</span>
+  </div>
+</div></header>
+
+<div class="wrap demo">
+  <img src="assets/demo.gif" alt="SkillCI demo: a baseline-vs-candidate evaluation producing a verdict" />
+  <div class="cap">A baseline-vs-candidate run scoring three ways and emitting a verdict — fully offline, deterministic.</div>
+</div>
+
+<section id="why"><div class="wrap">
+  <h2>You wouldn't merge untested code.</h2>
+  <p class="sub">Yet teams ship changes to the configuration that <em>steers</em> their coding
+    agents on vibes, with zero testing. A new line in a shared <code>CLAUDE.md</code> can quietly
+    make the agent slower, pricier, or worse — and nobody notices for weeks. Agent config is a
+    production artifact now. SkillCI is regression testing for it.</p>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="sub">Run a task suite twice — once per config — drive a real agent headlessly, score each run three ways, compare, and gate.</p>
+  <div class="flow"><pre>
+          ┌─ baseline config ─┐                      ┌──────────┐
+ tasks ──▶│                   ├─▶ run agent ─▶ score ─┤ compare  ├─▶ VERDICT
+          └─ candidate config ┘   (sandboxed)         └──────────┘   improved /
+                                                                     neutral /
+                                                                     regressed</pre></div>
+  <ol class="steps" style="margin-top:22px">
+    <li>A <b>candidate</b> is a proposed change to one or more agent config artifacts.</li>
+    <li>SkillCI runs sandboxed repo <b>tasks twice</b> — baseline vs. candidate — driving the agent headlessly in an isolated fixture.</li>
+    <li>Each run is scored on <b>three dimensions</b> and folded into one composite.</li>
+    <li>A comparator emits a <b>verdict</b> with an explicit list of any regressions.</li>
+    <li>A pull request opens <b>only</b> when the candidate is <b>improved</b> with zero hard regressions.</li>
+  </ol>
+</div></section>
+
+<section id="score"><div class="wrap">
+  <h2>Three scoring dimensions</h2>
+  <p class="sub">Objective correctness dominates, the LLM judge refines it, and cost nudges.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Objective <span class="w">0.6</span></h3>
+      <p>Deterministic pass/fail: command exit codes, file existence &amp; contents, test suites, expected diffs.</p>
+    </div>
+    <div class="card">
+      <h3>LLM judge <span class="w">0.4</span></h3>
+      <p>Rubric-scored quality for what objective checks can't capture. Runs via the Anthropic SDK <em>or</em> the <code>claude</code> CLI.</p>
+    </div>
+    <div class="card">
+      <h3>Cost <span class="w">±0.1</span></h3>
+      <p>Tokens, tool calls, steps, wall-clock — a relative bonus or penalty vs. the baseline run.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="start"><div class="wrap">
+  <h2>Quickstart</h2>
+  <p class="sub">Offline and deterministic to start — then live on your Claude subscription, no API key.</p>
+<pre class="code"><span class="c"># 1. Install &amp; run the offline demo (no network, no keys)</span>
+npm install
+npm run demo
+
+<span class="c"># 2. Build, then evaluate a real config change — live</span>
+npm run build
+node dist/cli/index.js run <span class="k">\</span>
+  --agent claude-code <span class="k">\</span>
+  --baseline ./config/baseline <span class="k">\</span>
+  --candidate ./config/candidate</pre>
+  <div class="note">Exit code is a CI gate: <b>non-zero only when the verdict is <code>regressed</code></b>.
+    The agent runs via <code>claude -p</code>; the judge does too when no <code>ANTHROPIC_API_KEY</code> is set.</div>
+</div></section>
+
+<section id="agents"><div class="wrap">
+  <h2>Supported agents</h2>
+  <table class="agents">
+    <tr><th>Agent</th><th>Artifacts</th><th>Headless invocation</th></tr>
+    <tr><td><b>Claude Code</b></td><td>skills, hooks, slash commands, <code>CLAUDE.md</code>, settings</td><td><code>claude -p … --output-format json</code></td></tr>
+    <tr><td><b>Cursor</b></td><td><code>.cursor/rules/*.mdc</code>, <code>.cursorrules</code></td><td><code>cursor-agent</code> (best-effort)</td></tr>
+    <tr><td><b>Codex</b></td><td><code>AGENTS.md</code> / codex config</td><td><code>codex exec</code></td></tr>
+  </table>
+  <div class="cta" style="justify-content:flex-start; margin-top:30px">
+    <a class="btn primary" href="https://github.com/doramirdor/skillci/tree/main/docs">Read the docs</a>
+    <a class="btn ghost" href="https://github.com/doramirdor/skillci">★ Star on GitHub</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <img src="assets/logo.svg" alt="" width="22" height="22" />
+  <span>SkillCI — CI for your AI config</span>
+  <span class="sp"></span>
+  <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  <a href="https://github.com/doramirdor/skillci/tree/main/docs">Docs</a>
+  <a href="https://github.com/doramirdor/skillci/blob/main/LICENSE">MIT License</a>
+</div></footer>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SkillCI logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="64" y1="48" x2="192" y2="208" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22D3EE"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- gate / badge -->
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bg)"/>
+  <rect x="8.5" y="8.5" width="239" height="239" rx="51.5" stroke="url(#accent)" stroke-opacity="0.5"/>
+
+  <!-- two branches merging into one trunk: the "candidate" merges past the gate -->
+  <g stroke="url(#accent)" stroke-width="14" stroke-linecap="round" fill="none">
+    <!-- baseline branch -->
+    <path d="M84 64 V112 Q84 140 112 140 H128"/>
+    <!-- candidate branch -->
+    <path d="M172 64 V112 Q172 140 144 140 H128"/>
+    <!-- merged trunk -->
+    <path d="M128 140 V176"/>
+  </g>
+
+  <!-- nodes -->
+  <circle cx="84" cy="60" r="16" fill="#0F172A" stroke="url(#accent)" stroke-width="12"/>
+  <circle cx="172" cy="60" r="16" fill="#0F172A" stroke="url(#accent)" stroke-width="12"/>
+
+  <!-- verdict check at the gate -->
+  <circle cx="128" cy="192" r="30" fill="url(#accent)"/>
+  <path d="M114 192 L124 202 L143 182" stroke="#0F172A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
