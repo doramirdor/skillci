@@ -12,6 +12,7 @@
  * - Tests inject a fake {@link JudgeFn} to stay fully offline.
  */
 import Anthropic from '@anthropic-ai/sdk';
+import { execa } from 'execa';
 
 import type { AgentRunResult, JudgeScore, SandboxResult, Task } from '../core/index.js';
 
@@ -101,6 +102,55 @@ export async function judgeWithLLM(
     return parseJudgeResponse(extractText(response.content));
   } catch {
     // Network/auth/parse failure: judge is optional, degrade silently.
+    return undefined;
+  }
+}
+
+/**
+ * A {@link JudgeFn} that runs the judge through the `claude` CLI (`claude -p
+ * ... --output-format json`) instead of the Anthropic SDK. This lets the judge
+ * work on a Claude Code subscription/OAuth session with NO `ANTHROPIC_API_KEY`,
+ * mirroring how {@link ClaudeCodeAdapter} drives the agent. Unlike the agent
+ * adapter, the judge is a pure text-reasoning call: it runs in the host (not a
+ * sandbox) and does NOT pass `--dangerously-skip-permissions` — it never needs
+ * tools or file access.
+ *
+ * The system + user prompts are concatenated into the single `-p` prompt. The
+ * JSON envelope's `result` string is then fed through {@link parseJudgeResponse}.
+ * Strictly best-effort: any non-zero exit, parse failure, or timeout yields
+ * `undefined` so the judge dimension is simply dropped.
+ */
+export async function claudeCliJudge(
+  task: Task,
+  runResult: AgentRunResult,
+  _sandbox: SandboxResult,
+  options: { binary?: string; timeoutMs?: number } = {},
+): Promise<JudgeScore | undefined> {
+  if (!task.judgeRubric) return undefined;
+
+  const prompt = [
+    buildJudgeSystemPrompt(task.judgeRubric.criteria),
+    '',
+    buildJudgeUserPrompt(task, runResult),
+  ].join('\n');
+
+  try {
+    const result = await execa(
+      options.binary ?? 'claude',
+      ['-p', prompt, '--output-format', 'json'],
+      { reject: false, timeout: options.timeoutMs ?? 60_000, env: { ...process.env } },
+    );
+    if (result.exitCode !== 0) return undefined;
+
+    let resultText = result.stdout;
+    try {
+      const envelope = JSON.parse(result.stdout) as { result?: unknown };
+      if (typeof envelope.result === 'string') resultText = envelope.result;
+    } catch {
+      // Not a JSON envelope — fall back to scanning raw stdout for the verdict.
+    }
+    return parseJudgeResponse(resultText);
+  } catch {
     return undefined;
   }
 }

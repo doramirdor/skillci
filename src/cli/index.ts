@@ -25,6 +25,7 @@ import {
 } from '../core/index.js';
 import { discoverConfigSet, diffConfigSets } from '../artifacts/index.js';
 import { getAdapter } from '../agents/index.js';
+import { claudeCliJudge } from '../scoring/index.js';
 import { loadTasks, getSampleTasks } from '../tasks/index.js';
 import { renderTerminalReport } from '../report/index.js';
 import { runDemo, runEvaluation } from '../orchestrator/index.js';
@@ -140,6 +141,16 @@ export async function runCommand(
     );
   }
 
+  // Judge backend: the SDK path (ANTHROPIC_API_KEY) wins when present. Otherwise,
+  // if we're judging Claude and its CLI is available (e.g. a Code subscription),
+  // route the judge through `claude -p` so it runs WITHOUT an API key — mirroring
+  // how the adapter drives the agent. With neither, the judge skips gracefully.
+  const judgeViaCli =
+    agent === 'claude-code' && available && !process.env.ANTHROPIC_API_KEY;
+  if (judgeViaCli) {
+    out(pc.dim('Judge: using the claude CLI (subscription auth — no ANTHROPIC_API_KEY).'));
+  }
+
   const result = await runEvaluation({
     rootDir: process.cwd(),
     baselineConfig,
@@ -147,6 +158,9 @@ export async function runCommand(
     tasks,
     agentKind: agent,
     adapter,
+    ...(judgeViaCli
+      ? { judgeOptions: { judgeFn: (t, r, s) => claudeCliJudge(t, r, s) } }
+      : {}),
     dryRunPr: flags.openPr !== true,
   });
 

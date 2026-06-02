@@ -17,6 +17,7 @@ export {
 
 export {
   judgeWithLLM,
+  claudeCliJudge,
   buildJudgeSystemPrompt,
   buildJudgeUserPrompt,
   parseJudgeResponse,

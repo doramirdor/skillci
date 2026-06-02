@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ClaudeCodeAdapter } from './claude-adapter.js';
 import { CodexAdapter } from './codex-adapter.js';
 import { CursorAdapter } from './cursor-adapter.js';
-import { AgentUnavailableError } from './errors.js';
+import { AgentOutputParseError, AgentUnavailableError } from './errors.js';
 import {
   makeConfigSet,
   makeRunArgs,
@@ -42,11 +42,11 @@ describe('real adapters degrade gracefully when unavailable', () => {
     await rm(workdir, { recursive: true, force: true });
   });
 
-  it('ClaudeCodeAdapter.isAvailable() is false without API key', async () => {
+  it('ClaudeCodeAdapter.isAvailable() is false with empty PATH', async () => {
     await expect(new ClaudeCodeAdapter().isAvailable()).resolves.toBe(false);
   });
 
-  it('ClaudeCodeAdapter.run() throws a typed missing-api-key error', async () => {
+  it('ClaudeCodeAdapter.run() throws a typed missing-binary error', async () => {
     const adapter = new ClaudeCodeAdapter();
     const args = makeRunArgs(workdir, makeTask(), makeConfigSet('claude-code', ['c']));
     await expect(adapter.run(args)).rejects.toBeInstanceOf(AgentUnavailableError);
@@ -56,7 +56,7 @@ describe('real adapters degrade gracefully when unavailable', () => {
       expect(err).toBeInstanceOf(AgentUnavailableError);
       const e = err as AgentUnavailableError;
       expect(e.kind).toBe('claude-code');
-      expect(e.reason).toBe('missing-api-key');
+      expect(e.reason).toBe('missing-binary');
     }
   });
 
@@ -104,12 +104,17 @@ describe('real adapters degrade gracefully when unavailable', () => {
 });
 
 /**
- * Pins the API-key gate independently of binary presence. We put a *real*
- * executable named `claude`/`codex` on PATH but clear the API key, then assert
- * the adapters still degrade gracefully (isAvailable()===false, run() throws a
- * typed missing-api-key error) rather than spawning an un-authed CLI. Without
- * the key gate in CodexAdapter this test fails. Skipped on Windows (the fake
- * shell-script binaries are POSIX).
+ * Pins each adapter's auth contract independently of binary presence. We put a
+ * *real* executable named `claude`/`codex` on PATH but clear the API keys.
+ *
+ * - Codex is KEY-gated: even with the binary present, no `OPENAI_API_KEY` means
+ *   isAvailable()===false and run() throws a typed missing-api-key error.
+ * - Claude is BINARY-gated (the CLI owns its own auth — API key OR
+ *   subscription/OAuth — exactly like Cursor): with the binary present it is
+ *   available, and an un-authed/empty CLI invocation surfaces as a typed
+ *   AgentOutputParseError rather than a fabricated success.
+ *
+ * Skipped on Windows (the fake shell-script binaries are POSIX).
  */
 const describeKeyGate = process.platform === 'win32' ? describe.skip : describe;
 
@@ -146,16 +151,18 @@ describeKeyGate('key-gated adapters degrade gracefully when binary present but k
     await rm(workdir, { recursive: true, force: true });
   });
 
-  it('ClaudeCodeAdapter is unavailable and run() throws missing-api-key despite binary on PATH', async () => {
+  it('ClaudeCodeAdapter is AVAILABLE with binary on PATH despite no API key (CLI owns auth)', async () => {
     const adapter = new ClaudeCodeAdapter();
-    await expect(adapter.isAvailable()).resolves.toBe(false);
+    await expect(adapter.isAvailable()).resolves.toBe(true);
+    // The fake `claude` exits 0 with empty stdout (un-authed/no telemetry). The
+    // adapter must surface that as a typed parse error, not a fabricated success.
     const args = makeRunArgs(workdir, makeTask(), makeConfigSet('claude-code', ['c']));
     try {
       await adapter.run(args);
       throw new Error('expected run() to throw');
     } catch (err) {
-      expect(err).toBeInstanceOf(AgentUnavailableError);
-      expect((err as AgentUnavailableError).reason).toBe('missing-api-key');
+      expect(err).toBeInstanceOf(AgentOutputParseError);
+      expect((err as AgentOutputParseError).kind).toBe('claude-code');
     }
   });
 

@@ -5,9 +5,16 @@
  * workdir. The JSON envelope is parsed into normalized {@link AgentRunResult}
  * telemetry (tokens, cost, turns).
  *
- * Availability requires BOTH the `claude` binary on PATH and an
- * `ANTHROPIC_API_KEY` in the environment. When unavailable, `run()` throws a
- * typed {@link AgentUnavailableError} rather than crashing.
+ * Availability requires only the `claude` binary on PATH — the CLI manages its
+ * own authentication (an `ANTHROPIC_API_KEY` *or* a Claude Code
+ * subscription/OAuth session), so there is no separate key check here. This
+ * mirrors {@link CursorAdapter}. When the binary is absent, `run()` throws a
+ * typed {@link AgentUnavailableError}; an un-authed or failed CLI invocation
+ * surfaces as a typed {@link AgentOutputParseError} from the envelope parser.
+ *
+ * Note: the LLM-as-judge in `scoring/judge.ts` *does* require an
+ * `ANTHROPIC_API_KEY` because it calls the Anthropic SDK directly (no CLI, no
+ * OAuth path). That key requirement belongs to the judge, not to this adapter.
  */
 
 import { execa } from 'execa';
@@ -16,7 +23,7 @@ import type {
   AgentRunArgs,
   AgentRunResult,
 } from '../core/index.js';
-import { hasBinary, hasEnv } from './availability.js';
+import { hasBinary } from './availability.js';
 import { AgentOutputParseError, AgentUnavailableError } from './errors.js';
 
 /** Shape of the relevant fields in `claude --output-format json` output. */
@@ -34,7 +41,6 @@ interface ClaudeJsonEnvelope {
 }
 
 const BINARY = 'claude';
-const API_KEY_ENV = 'ANTHROPIC_API_KEY';
 
 /**
  * Pure normalizer for the `claude --output-format json` envelope. Exported so
@@ -90,19 +96,37 @@ export class ClaudeCodeAdapter implements AgentAdapter {
   readonly kind = 'claude-code' as const;
 
   async isAvailable(): Promise<boolean> {
-    if (!hasEnv(API_KEY_ENV)) return false;
     return hasBinary(BINARY);
   }
 
   async run(args: AgentRunArgs): Promise<AgentRunResult> {
-    await assertAvailable(this);
+    if (!(await hasBinary(BINARY))) {
+      throw new AgentUnavailableError(
+        this.kind,
+        'missing-binary',
+        `Claude Code adapter unavailable: '${BINARY}' CLI not found on PATH.`,
+      );
+    }
 
     const { task, sandbox } = args;
     const started = Date.now();
 
     const result = await execa(
       BINARY,
-      ['-p', task.prompt, '--output-format', 'json'],
+      [
+        '-p',
+        task.prompt,
+        '--output-format',
+        'json',
+        // SkillCI always runs the agent inside an ephemeral, isolated sandbox
+        // (a disposable tmpdir copy of the fixture). Headless `claude -p` is
+        // default-deny on tool permissions, so without this flag the agent
+        // cannot edit files or run commands — every file-editing task would
+        // score as a failure regardless of config quality, defeating the
+        // evaluation. Bypassing permissions is exactly what the flag is
+        // recommended for in a throwaway sandbox.
+        '--dangerously-skip-permissions',
+      ],
       {
         cwd: sandbox.workdir,
         reject: false,
@@ -118,23 +142,6 @@ export class ClaudeCodeAdapter implements AgentAdapter {
       result.stderr,
       result.exitCode,
       wallClockMs,
-    );
-  }
-}
-
-async function assertAvailable(adapter: ClaudeCodeAdapter): Promise<void> {
-  if (!hasEnv(API_KEY_ENV)) {
-    throw new AgentUnavailableError(
-      adapter.kind,
-      'missing-api-key',
-      `Claude Code adapter unavailable: ${API_KEY_ENV} is not set.`,
-    );
-  }
-  if (!(await hasBinary(BINARY))) {
-    throw new AgentUnavailableError(
-      adapter.kind,
-      'missing-binary',
-      `Claude Code adapter unavailable: '${BINARY}' CLI not found on PATH.`,
     );
   }
 }
