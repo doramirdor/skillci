@@ -1,5 +1,9 @@
 # SkillCI promotion gate — EXAMPLE TEMPLATE
 #
+# This file lives in `examples/` (NOT `.github/workflows/`) on purpose: GitHub
+# executes anything under `.github/workflows/`, and this template has
+# placeholders that would fail. Copy it into YOUR repo's workflows dir.
+#
 # Copy this into a repo that holds agent config (skills/hooks/rules/instructions)
 # to gate changes: when a PR touches the config, SkillCI runs the candidate
 # (the PR's config) against the baseline (the target branch's config) over your

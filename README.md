@@ -104,7 +104,7 @@ node dist/cli/index.js run \
 
 Drop this in to evaluate every PR that touches your agent config. A ready-to-copy
 template lives at
-[`.github/workflows/skillci-gate.example.yml`](.github/workflows/skillci-gate.example.yml):
+[`examples/skillci-gate.yml`](examples/skillci-gate.yml):
 
 ```yaml
 name: skillci-gate

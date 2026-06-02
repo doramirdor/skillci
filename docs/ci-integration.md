@@ -12,7 +12,7 @@ a job triggered on PRs that touch config paths, point it at the trusted config
 ## GitHub Actions
 
 A ready-to-copy template lives at
-[`.github/workflows/skillci-gate.example.yml`](../.github/workflows/skillci-gate.example.yml).
+[`examples/skillci-gate.yml`](../examples/skillci-gate.yml).
 Minimal shape:
 
 ```yaml
