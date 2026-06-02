@@ -6,7 +6,12 @@
 Test, score, and gate changes to your skills, hooks, rules, and <code>CLAUDE.md</code><br/>
 <em>before</em> you trust them in Claude Code, Cursor, or Codex.</p>
 
+<p><strong><a href="https://doramirdor.github.io/skillci/">🌐 Website</a></strong> ·
+<a href="./docs/">Docs</a> ·
+<a href="./docs/getting-started.md">Getting Started</a></p>
+
 <p>
+  <img alt="CI" src="https://github.com/doramirdor/skillci/actions/workflows/ci.yml/badge.svg">
   <img alt="tests" src="https://img.shields.io/badge/tests-225%20passing-22c55e">
   <img alt="typescript" src="https://img.shields.io/badge/TypeScript-strict-3178c6">
   <img alt="node" src="https://img.shields.io/badge/node-%E2%89%A520-339933">
