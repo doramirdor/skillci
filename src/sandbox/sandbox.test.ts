@@ -123,12 +123,14 @@ describe('exec', () => {
 
   it('enforces a per-command timeout and reports it', async () => {
     const sb = await track(await createSandbox(fixtureDir));
-    const res = await sb.exec('node -e "setTimeout(()=>{}, 5000)"', {
+    const res = await sb.exec('node -e "setTimeout(()=>{}, 30000)"', {
       timeoutMs: 150,
     });
     expect(res.exitCode).not.toBe(0);
     expect(res.stderr).toMatch(/timed out/i);
-  });
+    // Worst case is timeoutMs + forceKillAfterDelay (~1.2s); the 30s inner timer
+    // ensures we genuinely exercise the kill path, not a natural early exit.
+  }, 20_000);
 });
 
 describe('snapshotDiff', () => {

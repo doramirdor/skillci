@@ -140,6 +140,11 @@ export class LocalSandboxBackend implements SandboxBackend {
         cwd,
         shell: useShell,
         timeout: timeoutMs,
+        // On timeout execa sends SIGTERM, then escalates to SIGKILL after this
+        // delay. execa's default is 5000ms, which means a process that ignores
+        // SIGTERM keeps the call alive ~5s past the timeout (and would trip a
+        // 5s test budget). Escalate fast so timeouts reclaim promptly.
+        forceKillAfterDelay: 1_000,
         reject: false,
         all: false,
         // execa inherits process.env by default; only override when asked.
