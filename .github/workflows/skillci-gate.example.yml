@@ -54,7 +54,7 @@ jobs:
       # Install SkillCI. Replace with `npm i -g skillci` once published.
       - name: Install SkillCI
         run: |
-          git clone --depth 1 https://github.com/YOUR_ORG/skillci skillci-tool
+          git clone --depth 1 https://github.com/doramirdor/skillci skillci-tool
           cd skillci-tool && npm ci && npm run build && npm link
 
       - name: Run SkillCI gate

@@ -4,6 +4,14 @@
   "description": "A CI/CD layer that tests, validates, and promotes coding-agent configuration artifacts (skills, hooks, rules, instructions) before teams trust them in Claude Code, Cursor, or Codex.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doramirdor/skillci.git"
+  },
+  "homepage": "https://github.com/doramirdor/skillci#readme",
+  "bugs": {
+    "url": "https://github.com/doramirdor/skillci/issues"
+  },
   "bin": {
     "skillci": "dist/cli/index.js"
   },
@@ -36,7 +44,19 @@
     "typescript": "^5.7.3",
     "vitest": "^3.0.7"
   },
-  "main": "index.js",
-  "keywords": [],
-  "author": ""
+  "main": "dist/cli/index.js",
+  "keywords": [
+    "ci",
+    "cd",
+    "coding-agent",
+    "claude-code",
+    "cursor",
+    "codex",
+    "llm",
+    "agent-config",
+    "evaluation",
+    "regression-testing",
+    "skills"
+  ],
+  "author": "Dor Amir <amirdor@gmail.com>"
 }
