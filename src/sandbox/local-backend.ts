@@ -134,25 +134,56 @@ export class LocalSandboxBackend implements SandboxBackend {
     const cwd = opts.cwd ? path.resolve(workdir, opts.cwd) : workdir;
     const useShell = opts.shell ?? true;
     const started = Date.now();
+    const isWindows = process.platform === 'win32';
 
     try {
-      const result = await execa(cmd, {
+      // On POSIX we run the command in its OWN process group (`detached`) and,
+      // on timeout, SIGKILL the entire group via the negative PID. This is the
+      // only reliable way to reclaim a timed-out command: with `shell: true`,
+      // the shell may fork the real process, and killing just the shell leaves
+      // a grandchild alive holding the stdout/stderr pipes open — so execa
+      // would never resolve until the grandchild exits on its own. Killing the
+      // group tears down the whole tree, closes the pipes, and resolves at once.
+      // Windows lacks POSIX process groups, so we fall back to execa's timeout.
+      const subprocess = execa(cmd, {
         cwd,
         shell: useShell,
-        timeout: timeoutMs,
-        // On timeout execa sends SIGTERM, then escalates to SIGKILL after this
-        // delay. execa's default is 5000ms, which means a process that ignores
-        // SIGTERM keeps the call alive ~5s past the timeout (and would trip a
-        // 5s test budget). Escalate fast so timeouts reclaim promptly.
-        forceKillAfterDelay: 1_000,
         reject: false,
         all: false,
+        ...(isWindows
+          ? { timeout: timeoutMs, forceKillAfterDelay: 1_000 }
+          : { detached: true }),
         // execa inherits process.env by default; only override when asked.
         ...(opts.env ? { env: opts.env, extendEnv: true } : {}),
         ...(opts.input !== undefined ? { input: opts.input } : {}),
         // Keep large outputs from blowing up memory in pathological cases.
         maxBuffer: 32 * 1024 * 1024,
       });
+
+      let groupTimedOut = false;
+      let killTimer: ReturnType<typeof setTimeout> | undefined;
+      if (!isWindows) {
+        killTimer = setTimeout(() => {
+          groupTimedOut = true;
+          const pid = subprocess.pid;
+          if (pid !== undefined) {
+            try {
+              process.kill(-pid, 'SIGKILL'); // whole process group
+            } catch {
+              try {
+                subprocess.kill('SIGKILL');
+              } catch {
+                /* already gone */
+              }
+            }
+          }
+        }, timeoutMs);
+        // Don't let a pending timer keep the event loop alive.
+        killTimer.unref?.();
+      }
+
+      const result = await subprocess;
+      if (killTimer) clearTimeout(killTimer);
       const durationMs = Date.now() - started;
       // execa's result with reject:false: timedOut / failed reflected on object.
       const r = result as {
@@ -161,7 +192,7 @@ export class LocalSandboxBackend implements SandboxBackend {
         stderr?: unknown;
         timedOut?: boolean;
       };
-      const timedOut = r.timedOut === true;
+      const timedOut = r.timedOut === true || groupTimedOut;
       const exitCode =
         typeof r.exitCode === 'number' ? r.exitCode : timedOut ? 124 : 1;
       const rawStdout = asText(r.stdout);
