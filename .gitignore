@@ -6,3 +6,8 @@ dist
 
 # Local Claude Code harness settings (personal, not shared)
 .claude/settings.local.json
+
+# Locally-installed agent skills (via `npx skills add`) — local tooling, not product
+.agents/
+.claude/skills/
+skills-lock.json
