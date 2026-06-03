@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Concepts · SkillCI Docs</title>
+<meta name="description" content="SkillCI documentation — Concepts." />
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.doc-shell{max-width:1200px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px 1fr;gap:52px}
+.doc-side{position:sticky;top:84px;align-self:start}
+.doc-side .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 12px;padding-left:12px}
+.doc-side a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-size:14.5px;font-weight:500;border-left:2px solid transparent}
+.doc-side a:hover{background:rgba(0,0,0,.04);color:var(--ink);text-decoration:none}
+.doc-side a.active{color:var(--accent-ink);background:#eef0fe;font-weight:600}
+.doc-main{min-width:0}
+.doc{max-width:760px}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:clamp(32px,4.5vw,44px);line-height:1.1;letter-spacing:-.025em;font-weight:700;margin:0 0 22px}
+.doc h2{font-size:24px;letter-spacing:-.015em;font-weight:650;margin:46px 0 14px;padding-top:26px;border-top:1px solid var(--line-2);scroll-margin-top:80px}
+.doc h3{font-size:18.5px;font-weight:650;margin:30px 0 10px;scroll-margin-top:80px}
+.doc p,.doc li{font-size:16.5px;line-height:1.75;color:#2b2b2f}
+.doc a{color:var(--accent);font-weight:500}
+.doc strong{color:var(--ink);font-weight:650}
+.doc ul,.doc ol{padding-left:22px}.doc li{margin:6px 0}
+.doc code{font-family:var(--mono);font-size:.85em;background:var(--code-bg);padding:2px 6px;border-radius:6px;color:var(--ink)}
+.doc pre{background:var(--code-bg);border:1px solid var(--line-2);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:18px 0}
+.doc pre code{background:none;padding:0;font-size:13.5px;line-height:1.65;color:#1d1d1f}
+.doc blockquote{margin:18px 0;padding:6px 18px;border-left:3px solid var(--accent);color:var(--ink-2);background:#fafaff;border-radius:0 10px 10px 0}
+.doc blockquote p{margin:6px 0}
+.doc table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.doc th,.doc td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.doc th{background:#fcfcfd;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600}
+.doc tr:last-child td{border-bottom:0}
+.doc hr{border:0;border-top:1px solid var(--line-2);margin:36px 0}
+.doc img{max-width:100%;border-radius:10px}
+.doc-pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line-2)}
+.doc-pager>a{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 18px;color:var(--ink);transition:box-shadow .2s var(--ease),border-color .2s var(--ease)}
+.doc-pager>a:hover{box-shadow:var(--shadow-sm);border-color:rgba(0,0,0,.22);text-decoration:none}
+.doc-pager .nxt{text-align:right}
+.doc-pager .k{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+.doc-pager .t{font-weight:600;font-size:15px}
+@media(max-width:900px){.doc-shell{grid-template-columns:1fr;gap:22px;padding-top:84px}
+  .doc-side{position:static;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:18px;border-bottom:1px solid var(--line-2)}
+  .doc-side .lbl{width:100%}.doc-side a{border-left:0}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="inner">
+  <a class="brand" href="../"><img src="../assets/logo.svg" alt="" /> Skill<b>CI</b></a>
+  <span class="sp"></span>
+  <nav class="links">
+    <a href="index.html">Docs</a>
+    <a class="cta" href="https://github.com/doramirdor/skillci">GitHub</a>
+  </nav>
+</div></header>
+
+<div class="doc-shell">
+  <aside class="doc-side">
+    <p class="lbl">Documentation</p>
+      <a href="index.html">Overview</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="concepts.html" class="active">Concepts</a>
+      <a href="cli-reference.html">CLI Reference</a>
+      <a href="writing-tasks.html">Writing Tasks</a>
+      <a href="scoring.html">Scoring</a>
+      <a href="agents-and-auth.html">Agents & Auth</a>
+      <a href="ci-integration.html">CI Integration</a>
+      <a href="architecture.html">Architecture</a>
+      <a href="troubleshooting.html">Troubleshooting</a>
+  </aside>
+  <main class="doc-main">
+    <article class="doc">
+<h1 id="concepts">Concepts</h1>
+<p>The core ideas behind SkillCI and how a verdict is decided.</p>
+<h2 id="config-artifacts">Config artifacts</h2>
+<p>The things SkillCI tests are <strong>agent configuration artifacts</strong> — the files that
+steer a coding agent&#39;s behavior:</p>
+<ul>
+<li><strong>Claude Code:</strong> <code>CLAUDE.md</code>, <code>.claude/skills/**</code>, <code>.claude/hooks/**</code>,
+<code>.claude/commands/*.md</code>, <code>.claude/settings.json</code>.</li>
+<li><strong>Cursor:</strong> <code>.cursor/rules/*.mdc</code>, <code>.cursorrules</code>.</li>
+<li><strong>Codex:</strong> <code>AGENTS.md</code> / codex config.</li>
+</ul>
+<p>A directory of these, discovered and normalized, becomes a <strong><code>ConfigSet</code></strong>.</p>
+<h2 id="baseline-vs-candidate">Baseline vs. candidate</h2>
+<ul>
+<li><strong>Baseline</strong> — the current, trusted config. The control.</li>
+<li><strong>Candidate</strong> — the proposed change. The treatment.</li>
+</ul>
+<p>SkillCI runs the same task suite under each and compares. This A/B structure is
+what lets it attribute a behavior change to the config change rather than to
+noise — though see the <a href="#a-note-on-determinism">caveat on variance</a>.</p>
+<h2 id="tasks-amp-fixtures">Tasks &amp; fixtures</h2>
+<p>A <strong>task</strong> is a unit of work the agent attempts:</p>
+<ul>
+<li>a <strong>fixture</strong> repo (copied fresh into an isolated sandbox per run),</li>
+<li>a <strong>prompt</strong> handed to the agent headlessly,</li>
+<li><strong>objective checks</strong> evaluated after the run,</li>
+<li>an optional <strong>judge rubric</strong>,</li>
+<li>a per-task <strong>timeout</strong>.</li>
+</ul>
+<p>See <a href="writing-tasks.html">Writing Tasks</a>.</p>
+<h2 id="the-three-scoring-dimensions">The three scoring dimensions</h2>
+<p>Every run is scored on three axes, folded into one <strong>composite</strong> in <code>[0, 1]</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th align="center">Weight</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Objective</strong></td>
+<td align="center"><code>0.6</code></td>
+<td>Deterministic checks: did files/commands/tests come out right?</td>
+</tr>
+<tr>
+<td><strong>LLM-as-judge</strong></td>
+<td align="center"><code>0.4</code></td>
+<td>Rubric-scored quality for what objective checks can&#39;t capture.</td>
+</tr>
+<tr>
+<td><strong>Cost / efficiency</strong></td>
+<td align="center"><code>±0.1</code> adj.</td>
+<td>Tokens/steps/time — a <em>relative</em> bonus or penalty vs. the baseline run.</td>
+</tr>
+</tbody></table>
+<p>Objective and judge form a weighted base (the judge is re-weighted out when
+absent, so objective alone still scores). Cost is a small adjustment on top. See
+<a href="scoring.html">Scoring</a> for the exact formula.</p>
+<h2 id="the-verdict">The verdict</h2>
+<p>The comparator aggregates per-task composites into one of three verdicts:</p>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>improved</code></td>
+<td>Candidate is better, with <strong>zero hard regressions</strong>.</td>
+</tr>
+<tr>
+<td><code>neutral</code></td>
+<td>No meaningful change.</td>
+</tr>
+<tr>
+<td><code>regressed</code></td>
+<td>Candidate is worse on at least one hard dimension.</td>
+</tr>
+</tbody></table>
+<h2 id="the-regression-gate-fail-closed">The regression gate (fail-closed)</h2>
+<p>A candidate is <strong>blocked from promotion</strong> if any of these hold (defaults shown):</p>
+<ul>
+<li><strong>Objective drop</strong> — fewer objective checks pass on any task
+(<code>objectiveDropIsRegression: true</code>).</li>
+<li><strong>Per-task composite drop</strong> beyond <code>regressionCompositeDrop: 0.05</code>.</li>
+<li><strong>Net composite gain</strong> <code>≤ minCompositeGain: 0.01</code> → at best <code>neutral</code>, not <code>improved</code>.</li>
+<li>A <strong>dropped task</strong> or any <strong>non-finite</strong> score.</li>
+</ul>
+<p>Promotion (<code>shouldPromote()</code> → open a PR) requires <code>improved</code> <strong>and</strong> zero hard
+regressions. The gate is deliberately conservative: when in doubt, it does <strong>not</strong>
+promote.</p>
+<p><code>skillci run</code> exits non-zero <strong>only</strong> on <code>regressed</code>, so a <code>neutral</code> candidate
+doesn&#39;t break your build — it just doesn&#39;t get a PR.</p>
+<h2 id="a-note-on-determinism">A note on determinism</h2>
+<p>Objective checks, the composite math, and the gate are deterministic. <strong>Real
+agent runs are not</strong> — token cost and the agent&#39;s exact output vary run-to-run.
+A single live run is a useful signal, not a verdict to bet the farm on. For
+trustworthy automated promotion, average multiple runs and/or widen the cost
+tolerance (see the roadmap in the <a href="https://github.com/doramirdor/skillci/blob/main/README.md">README</a>). The offline demo and
+the test suite are fully deterministic.</p>
+<h2 id="where-the-pieces-live">Where the pieces live</h2>
+<p>See <a href="architecture.html">Architecture</a> for the module map and data flow.</p>
+
+    </article>
+    <nav class="doc-pager"><a class="prv" href="getting-started.html"><span class="k">Previous</span><span class="t">Getting Started</span></a><a class="nxt" href="cli-reference.html"><span class="k">Next</span><span class="t">CLI Reference</span></a></nav>
+  </main>
+</div>
+
+<footer class="footer"><div class="inner">
+  <img src="../assets/logo.svg" alt="" />
+  <span>SkillCI — CI for your AI config</span>
+  <span class="sp"></span>
+  <a href="../">Home</a>
+  <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  <a href="https://github.com/doramirdor/skillci/blob/main/LICENSE">MIT</a>
+</div></footer>
+</body>
+</html>

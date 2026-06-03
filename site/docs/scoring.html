@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scoring · SkillCI Docs</title>
+<meta name="description" content="SkillCI documentation — Scoring." />
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.doc-shell{max-width:1200px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px 1fr;gap:52px}
+.doc-side{position:sticky;top:84px;align-self:start}
+.doc-side .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 12px;padding-left:12px}
+.doc-side a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-size:14.5px;font-weight:500;border-left:2px solid transparent}
+.doc-side a:hover{background:rgba(0,0,0,.04);color:var(--ink);text-decoration:none}
+.doc-side a.active{color:var(--accent-ink);background:#eef0fe;font-weight:600}
+.doc-main{min-width:0}
+.doc{max-width:760px}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:clamp(32px,4.5vw,44px);line-height:1.1;letter-spacing:-.025em;font-weight:700;margin:0 0 22px}
+.doc h2{font-size:24px;letter-spacing:-.015em;font-weight:650;margin:46px 0 14px;padding-top:26px;border-top:1px solid var(--line-2);scroll-margin-top:80px}
+.doc h3{font-size:18.5px;font-weight:650;margin:30px 0 10px;scroll-margin-top:80px}
+.doc p,.doc li{font-size:16.5px;line-height:1.75;color:#2b2b2f}
+.doc a{color:var(--accent);font-weight:500}
+.doc strong{color:var(--ink);font-weight:650}
+.doc ul,.doc ol{padding-left:22px}.doc li{margin:6px 0}
+.doc code{font-family:var(--mono);font-size:.85em;background:var(--code-bg);padding:2px 6px;border-radius:6px;color:var(--ink)}
+.doc pre{background:var(--code-bg);border:1px solid var(--line-2);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:18px 0}
+.doc pre code{background:none;padding:0;font-size:13.5px;line-height:1.65;color:#1d1d1f}
+.doc blockquote{margin:18px 0;padding:6px 18px;border-left:3px solid var(--accent);color:var(--ink-2);background:#fafaff;border-radius:0 10px 10px 0}
+.doc blockquote p{margin:6px 0}
+.doc table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.doc th,.doc td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.doc th{background:#fcfcfd;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600}
+.doc tr:last-child td{border-bottom:0}
+.doc hr{border:0;border-top:1px solid var(--line-2);margin:36px 0}
+.doc img{max-width:100%;border-radius:10px}
+.doc-pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line-2)}
+.doc-pager>a{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 18px;color:var(--ink);transition:box-shadow .2s var(--ease),border-color .2s var(--ease)}
+.doc-pager>a:hover{box-shadow:var(--shadow-sm);border-color:rgba(0,0,0,.22);text-decoration:none}
+.doc-pager .nxt{text-align:right}
+.doc-pager .k{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+.doc-pager .t{font-weight:600;font-size:15px}
+@media(max-width:900px){.doc-shell{grid-template-columns:1fr;gap:22px;padding-top:84px}
+  .doc-side{position:static;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:18px;border-bottom:1px solid var(--line-2)}
+  .doc-side .lbl{width:100%}.doc-side a{border-left:0}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="inner">
+  <a class="brand" href="../"><img src="../assets/logo.svg" alt="" /> Skill<b>CI</b></a>
+  <span class="sp"></span>
+  <nav class="links">
+    <a href="index.html">Docs</a>
+    <a class="cta" href="https://github.com/doramirdor/skillci">GitHub</a>
+  </nav>
+</div></header>
+
+<div class="doc-shell">
+  <aside class="doc-side">
+    <p class="lbl">Documentation</p>
+      <a href="index.html">Overview</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="concepts.html">Concepts</a>
+      <a href="cli-reference.html">CLI Reference</a>
+      <a href="writing-tasks.html">Writing Tasks</a>
+      <a href="scoring.html" class="active">Scoring</a>
+      <a href="agents-and-auth.html">Agents & Auth</a>
+      <a href="ci-integration.html">CI Integration</a>
+      <a href="architecture.html">Architecture</a>
+      <a href="troubleshooting.html">Troubleshooting</a>
+  </aside>
+  <main class="doc-main">
+    <article class="doc">
+<h1 id="scoring">Scoring</h1>
+<p>How a single run becomes a number, and how two runs become a verdict.</p>
+<h2 id="the-composite">The composite</h2>
+<p>Each (task, config) run yields a <strong>composite score in <code>[0, 1]</code></strong>, combining
+three dimensions:</p>
+<pre><code>obj01   = objective checks passed / total            (1.0 when a task has no checks)
+judge01 = judge.score0to1                             (omitted when no rubric/judge)
+
+base    = (W_OBJ · obj01 + W_JUDGE · judge01) / (W_OBJ + W_JUDGE_eff)
+composite = clamp(base + costAdjustment, 0, 1)
+</code></pre>
+<p>Constants (<code>src/scoring/composite.ts</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th align="center">Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>W_OBJ</code></td>
+<td align="center"><code>0.6</code></td>
+<td>Objective weight.</td>
+</tr>
+<tr>
+<td><code>W_JUDGE</code></td>
+<td align="center"><code>0.4</code></td>
+<td>Judge weight. <strong><code>W_JUDGE_eff = 0</code> when there&#39;s no judge score</strong>, so objective alone fully determines <code>base</code>.</td>
+</tr>
+<tr>
+<td><code>COST_WEIGHT</code></td>
+<td align="center"><code>0.1</code></td>
+<td>Magnitude cap of the cost adjustment.</td>
+</tr>
+</tbody></table>
+<p>So objective correctness dominates, the judge refines it, and cost nudges.</p>
+<h3 id="objective-dimension">Objective dimension</h3>
+<p><code>runObjectiveChecks</code> executes every check against the post-run sandbox and
+returns <code>{ passed, total }</code>. <code>obj01 = passed/total</code>; a task with <strong>no checks</strong>
+scores a neutral <code>1.0</code> on this axis (it can&#39;t fail what it doesn&#39;t assert).</p>
+<h3 id="judge-dimension">Judge dimension</h3>
+<p>Best-effort and optional. Returns <code>{ score0to1, rationale }</code> or <code>undefined</code>.
+Two interchangeable backends:</p>
+<ul>
+<li><strong>SDK</strong> (<code>judgeWithLLM</code>) — Anthropic SDK, prompt-cached. Needs <code>ANTHROPIC_API_KEY</code>.</li>
+<li><strong>CLI</strong> (<code>claudeCliJudge</code>) — runs <code>claude -p --output-format json</code>. Works on a
+Claude subscription with <strong>no API key</strong>. Pure text reasoning: no sandbox, no
+<code>--dangerously-skip-permissions</code>.</li>
+</ul>
+<p>If neither is available, the dimension is dropped (re-weighted out) — judging
+<strong>never throws</strong> to break a run.</p>
+<h3 id="cost-dimension">Cost dimension</h3>
+<p><code>costMetrics</code> projects tokens, tool calls, steps, and wall-clock from the run.
+The candidate&#39;s cost is scored <strong>relative to the baseline run</strong> (<code>reference</code>):
+cheaper → positive adjustment, pricier → negative, bounded by <code>COST_WEIGHT</code>. The
+baseline itself is scored with a neutral cost term.</p>
+<blockquote>
+<p>Cost is the <strong>noisy</strong> axis on live runs — see <a href="concepts.html#a-note-on-determinism">Concepts → determinism</a>.</p>
+</blockquote>
+<h2 id="from-scores-to-a-verdict">From scores to a verdict</h2>
+<p>The comparator sums per-task composite deltas and applies the thresholds
+(<code>ThresholdsSchema</code>, all overridable):</p>
+<table>
+<thead>
+<tr>
+<th>Threshold</th>
+<th align="center">Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>minCompositeGain</code></td>
+<td align="center"><code>0.01</code></td>
+<td>Net gain must exceed this to be <code>improved</code> (else <code>neutral</code>).</td>
+</tr>
+<tr>
+<td><code>regressionCompositeDrop</code></td>
+<td align="center"><code>0.05</code></td>
+<td>A per-task composite drop beyond this magnitude is a <strong>hard regression</strong>.</td>
+</tr>
+<tr>
+<td><code>objectiveDropIsRegression</code></td>
+<td align="center"><code>true</code></td>
+<td>Any drop in objective checks passed on any task is a <strong>hard regression</strong>, regardless of gains elsewhere.</td>
+</tr>
+</tbody></table>
+<h3 id="verdict">Verdict</h3>
+<ul>
+<li><code>improved</code> — net gain <code>&gt; minCompositeGain</code> <strong>and</strong> zero hard regressions.</li>
+<li><code>neutral</code> — no meaningful change.</li>
+<li><code>regressed</code> — at least one hard regression (objective drop, per-task drop
+beyond threshold, dropped task, or non-finite score).</li>
+</ul>
+<h3 id="promotion">Promotion</h3>
+<p><code>shouldPromote()</code> returns true <strong>only</strong> for <code>improved</code> with zero hard
+regressions — the single condition under which the <code>pr</code> module will open a PR.
+The gate is <strong>fail-closed</strong>: ambiguity never promotes.</p>
+<h2 id="tuning">Tuning</h2>
+<p>Pass custom thresholds through the orchestrator/programmatic API when the
+defaults don&#39;t fit your risk tolerance — e.g. raise <code>minCompositeGain</code> to demand
+a larger win, or widen <code>regressionCompositeDrop</code> to tolerate small wobbles. The
+hard objective rule should generally stay on.</p>
+
+    </article>
+    <nav class="doc-pager"><a class="prv" href="writing-tasks.html"><span class="k">Previous</span><span class="t">Writing Tasks</span></a><a class="nxt" href="agents-and-auth.html"><span class="k">Next</span><span class="t">Agents & Auth</span></a></nav>
+  </main>
+</div>
+
+<footer class="footer"><div class="inner">
+  <img src="../assets/logo.svg" alt="" />
+  <span>SkillCI — CI for your AI config</span>
+  <span class="sp"></span>
+  <a href="../">Home</a>
+  <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  <a href="https://github.com/doramirdor/skillci/blob/main/LICENSE">MIT</a>
+</div></footer>
+</body>
+</html>

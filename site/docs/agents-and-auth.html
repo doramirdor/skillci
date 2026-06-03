@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agents & Auth · SkillCI Docs</title>
+<meta name="description" content="SkillCI documentation — Agents & Auth." />
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.doc-shell{max-width:1200px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px 1fr;gap:52px}
+.doc-side{position:sticky;top:84px;align-self:start}
+.doc-side .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 12px;padding-left:12px}
+.doc-side a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-size:14.5px;font-weight:500;border-left:2px solid transparent}
+.doc-side a:hover{background:rgba(0,0,0,.04);color:var(--ink);text-decoration:none}
+.doc-side a.active{color:var(--accent-ink);background:#eef0fe;font-weight:600}
+.doc-main{min-width:0}
+.doc{max-width:760px}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:clamp(32px,4.5vw,44px);line-height:1.1;letter-spacing:-.025em;font-weight:700;margin:0 0 22px}
+.doc h2{font-size:24px;letter-spacing:-.015em;font-weight:650;margin:46px 0 14px;padding-top:26px;border-top:1px solid var(--line-2);scroll-margin-top:80px}
+.doc h3{font-size:18.5px;font-weight:650;margin:30px 0 10px;scroll-margin-top:80px}
+.doc p,.doc li{font-size:16.5px;line-height:1.75;color:#2b2b2f}
+.doc a{color:var(--accent);font-weight:500}
+.doc strong{color:var(--ink);font-weight:650}
+.doc ul,.doc ol{padding-left:22px}.doc li{margin:6px 0}
+.doc code{font-family:var(--mono);font-size:.85em;background:var(--code-bg);padding:2px 6px;border-radius:6px;color:var(--ink)}
+.doc pre{background:var(--code-bg);border:1px solid var(--line-2);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:18px 0}
+.doc pre code{background:none;padding:0;font-size:13.5px;line-height:1.65;color:#1d1d1f}
+.doc blockquote{margin:18px 0;padding:6px 18px;border-left:3px solid var(--accent);color:var(--ink-2);background:#fafaff;border-radius:0 10px 10px 0}
+.doc blockquote p{margin:6px 0}
+.doc table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.doc th,.doc td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.doc th{background:#fcfcfd;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600}
+.doc tr:last-child td{border-bottom:0}
+.doc hr{border:0;border-top:1px solid var(--line-2);margin:36px 0}
+.doc img{max-width:100%;border-radius:10px}
+.doc-pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line-2)}
+.doc-pager>a{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 18px;color:var(--ink);transition:box-shadow .2s var(--ease),border-color .2s var(--ease)}
+.doc-pager>a:hover{box-shadow:var(--shadow-sm);border-color:rgba(0,0,0,.22);text-decoration:none}
+.doc-pager .nxt{text-align:right}
+.doc-pager .k{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+.doc-pager .t{font-weight:600;font-size:15px}
+@media(max-width:900px){.doc-shell{grid-template-columns:1fr;gap:22px;padding-top:84px}
+  .doc-side{position:static;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:18px;border-bottom:1px solid var(--line-2)}
+  .doc-side .lbl{width:100%}.doc-side a{border-left:0}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="inner">
+  <a class="brand" href="../"><img src="../assets/logo.svg" alt="" /> Skill<b>CI</b></a>
+  <span class="sp"></span>
+  <nav class="links">
+    <a href="index.html">Docs</a>
+    <a class="cta" href="https://github.com/doramirdor/skillci">GitHub</a>
+  </nav>
+</div></header>
+
+<div class="doc-shell">
+  <aside class="doc-side">
+    <p class="lbl">Documentation</p>
+      <a href="index.html">Overview</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="concepts.html">Concepts</a>
+      <a href="cli-reference.html">CLI Reference</a>
+      <a href="writing-tasks.html">Writing Tasks</a>
+      <a href="scoring.html">Scoring</a>
+      <a href="agents-and-auth.html" class="active">Agents & Auth</a>
+      <a href="ci-integration.html">CI Integration</a>
+      <a href="architecture.html">Architecture</a>
+      <a href="troubleshooting.html">Troubleshooting</a>
+  </aside>
+  <main class="doc-main">
+    <article class="doc">
+<h1 id="agents-amp-auth">Agents &amp; Auth</h1>
+<p>How SkillCI drives each coding agent, what auth each needs, and how to add a new
+adapter.</p>
+<h2 id="the-adapter-contract">The adapter contract</h2>
+<p>Every agent implements <code>AgentAdapter</code>:</p>
+<pre><code class="language-ts">interface AgentAdapter {
+  readonly kind: AgentKind;            // &#39;claude-code&#39; | &#39;cursor&#39; | &#39;codex&#39;
+  isAvailable(): Promise&lt;boolean&gt;;     // can it run in this environment?
+  run(args): Promise&lt;AgentRunResult&gt;;  // drive it headlessly, return telemetry
+}
+</code></pre>
+<p><code>run()</code> normalizes whatever the agent CLI emits into a common <code>AgentRunResult</code>
+(transcript, tokens, cost, steps, tool calls, wall-clock). Adapters <strong>degrade
+gracefully</strong>: when unavailable they throw a typed <code>AgentUnavailableError</code> rather
+than crashing, and the orchestrator falls back to the deterministic mock.</p>
+<h2 id="claude-code">Claude Code</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Availability</strong></td>
+<td>the <code>claude</code> binary on PATH — <strong>that&#39;s it</strong>.</td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td>the CLI owns its own auth: an <code>ANTHROPIC_API_KEY</code> <strong>or</strong> a Claude Code subscription/OAuth session. SkillCI does <strong>not</strong> require the env key.</td>
+</tr>
+<tr>
+<td><strong>Invocation</strong></td>
+<td><code>claude -p &quot;&lt;prompt&gt;&quot; --output-format json --dangerously-skip-permissions</code></td>
+</tr>
+</tbody></table>
+<p>Why <code>--dangerously-skip-permissions</code>: headless <code>claude -p</code> is default-deny on
+tool permissions, so without it the agent can&#39;t edit files or run commands and
+every editing task silently scores as a failure. Runs always happen inside a
+<strong>disposable, isolated sandbox</strong>, which is exactly what the flag is for.</p>
+<blockquote>
+<p>The Claude adapter gates on the binary only — mirroring Cursor — because the
+CLI manages auth itself. The API-key requirement lives solely in the LLM
+judge&#39;s SDK backend (see <a href="scoring.html">Scoring</a>).</p>
+</blockquote>
+<h2 id="cursor">Cursor</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Availability</strong></td>
+<td>the <code>cursor-agent</code> binary on PATH.</td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td>Cursor manages its own auth (no separate key check).</td>
+</tr>
+<tr>
+<td><strong>Invocation</strong></td>
+<td><code>cursor-agent -p &quot;&lt;prompt&gt;&quot; --output-format json</code> (best-effort).</td>
+</tr>
+</tbody></table>
+<p>Cursor&#39;s headless surface is less stable; the adapter parses JSON telemetry when
+present and otherwise falls back to text with zeroed token/cost fields. A
+timed-out or non-zero run surfaces a typed error rather than a fake success.</p>
+<h2 id="codex">Codex</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Availability</strong></td>
+<td>the <code>codex</code> binary <strong>and</strong> <code>OPENAI_API_KEY</code>.</td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td>key-gated (<code>OPENAI_API_KEY</code>).</td>
+</tr>
+<tr>
+<td><strong>Invocation</strong></td>
+<td><code>codex exec &quot;&lt;prompt&gt;&quot;</code> (non-interactive).</td>
+</tr>
+</tbody></table>
+<p>Codex&#39;s machine output varies by version; the adapter tries JSON first, falls
+back to text with zeroed telemetry, and surfaces typed errors on timeout/failure.</p>
+<h2 id="the-mock-adapter">The mock adapter</h2>
+<p><code>MockAgentAdapter</code> is deterministic and offline — no network, no keys. It powers
+the test suite and <code>npm run demo</code>, and is the fallback whenever a real adapter is
+unavailable. This is what makes the whole pipeline runnable in CI for free.</p>
+<h2 id="adding-a-new-adapter">Adding a new adapter</h2>
+<ol>
+<li>Create <code>src/agents/&lt;name&gt;-adapter.ts</code> implementing <code>AgentAdapter</code>.</li>
+<li><code>isAvailable()</code> — probe the binary (<code>hasBinary</code>) and, only if the CLI can&#39;t
+self-auth, the key (<code>hasEnv</code>). Prefer binary-only when the CLI owns its auth.</li>
+<li><code>run()</code> — spawn via <code>execa</code> inside <code>args.sandbox.workdir</code>, honor
+<code>task.timeoutMs</code>, and normalize output into <code>AgentRunResult</code>. Don&#39;t fabricate
+a zeroed &quot;success&quot; for a timeout/non-zero run — throw a typed error.</li>
+<li>Register it so <code>getAdapter(kind)</code> resolves it.</li>
+<li>Tests: mock <code>execa</code> to pin the <strong>invocation contract</strong> (flags, cwd) and the
+availability logic. Never spawn real CLIs in unit tests. See
+<code>claude-invocation.test.ts</code> and <code>real-adapters.test.ts</code> for the pattern.</li>
+</ol>
+
+    </article>
+    <nav class="doc-pager"><a class="prv" href="scoring.html"><span class="k">Previous</span><span class="t">Scoring</span></a><a class="nxt" href="ci-integration.html"><span class="k">Next</span><span class="t">CI Integration</span></a></nav>
+  </main>
+</div>
+
+<footer class="footer"><div class="inner">
+  <img src="../assets/logo.svg" alt="" />
+  <span>SkillCI — CI for your AI config</span>
+  <span class="sp"></span>
+  <a href="../">Home</a>
+  <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  <a href="https://github.com/doramirdor/skillci/blob/main/LICENSE">MIT</a>
+</div></footer>
+</body>
+</html>

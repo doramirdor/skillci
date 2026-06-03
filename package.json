@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "docs:build": "node site/build-docs.mjs",
     "dev": "tsx",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.19",
+    "marked": "^18.0.4",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "vitest": "^3.0.7"

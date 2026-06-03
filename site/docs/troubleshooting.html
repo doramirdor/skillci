@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Troubleshooting · SkillCI Docs</title>
+<meta name="description" content="SkillCI documentation — Troubleshooting." />
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.doc-shell{max-width:1200px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px 1fr;gap:52px}
+.doc-side{position:sticky;top:84px;align-self:start}
+.doc-side .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 12px;padding-left:12px}
+.doc-side a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-size:14.5px;font-weight:500;border-left:2px solid transparent}
+.doc-side a:hover{background:rgba(0,0,0,.04);color:var(--ink);text-decoration:none}
+.doc-side a.active{color:var(--accent-ink);background:#eef0fe;font-weight:600}
+.doc-main{min-width:0}
+.doc{max-width:760px}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:clamp(32px,4.5vw,44px);line-height:1.1;letter-spacing:-.025em;font-weight:700;margin:0 0 22px}
+.doc h2{font-size:24px;letter-spacing:-.015em;font-weight:650;margin:46px 0 14px;padding-top:26px;border-top:1px solid var(--line-2);scroll-margin-top:80px}
+.doc h3{font-size:18.5px;font-weight:650;margin:30px 0 10px;scroll-margin-top:80px}
+.doc p,.doc li{font-size:16.5px;line-height:1.75;color:#2b2b2f}
+.doc a{color:var(--accent);font-weight:500}
+.doc strong{color:var(--ink);font-weight:650}
+.doc ul,.doc ol{padding-left:22px}.doc li{margin:6px 0}
+.doc code{font-family:var(--mono);font-size:.85em;background:var(--code-bg);padding:2px 6px;border-radius:6px;color:var(--ink)}
+.doc pre{background:var(--code-bg);border:1px solid var(--line-2);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:18px 0}
+.doc pre code{background:none;padding:0;font-size:13.5px;line-height:1.65;color:#1d1d1f}
+.doc blockquote{margin:18px 0;padding:6px 18px;border-left:3px solid var(--accent);color:var(--ink-2);background:#fafaff;border-radius:0 10px 10px 0}
+.doc blockquote p{margin:6px 0}
+.doc table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.doc th,.doc td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.doc th{background:#fcfcfd;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600}
+.doc tr:last-child td{border-bottom:0}
+.doc hr{border:0;border-top:1px solid var(--line-2);margin:36px 0}
+.doc img{max-width:100%;border-radius:10px}
+.doc-pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line-2)}
+.doc-pager>a{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 18px;color:var(--ink);transition:box-shadow .2s var(--ease),border-color .2s var(--ease)}
+.doc-pager>a:hover{box-shadow:var(--shadow-sm);border-color:rgba(0,0,0,.22);text-decoration:none}
+.doc-pager .nxt{text-align:right}
+.doc-pager .k{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+.doc-pager .t{font-weight:600;font-size:15px}
+@media(max-width:900px){.doc-shell{grid-template-columns:1fr;gap:22px;padding-top:84px}
+  .doc-side{position:static;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:18px;border-bottom:1px solid var(--line-2)}
+  .doc-side .lbl{width:100%}.doc-side a{border-left:0}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="inner">
+  <a class="brand" href="../"><img src="../assets/logo.svg" alt="" /> Skill<b>CI</b></a>
+  <span class="sp"></span>
+  <nav class="links">
+    <a href="index.html">Docs</a>
+    <a class="cta" href="https://github.com/doramirdor/skillci">GitHub</a>
+  </nav>
+</div></header>
+
+<div class="doc-shell">
+  <aside class="doc-side">
+    <p class="lbl">Documentation</p>
+      <a href="index.html">Overview</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="concepts.html">Concepts</a>
+      <a href="cli-reference.html">CLI Reference</a>
+      <a href="writing-tasks.html">Writing Tasks</a>
+      <a href="scoring.html">Scoring</a>
+      <a href="agents-and-auth.html">Agents & Auth</a>
+      <a href="ci-integration.html">CI Integration</a>
+      <a href="architecture.html">Architecture</a>
+      <a href="troubleshooting.html" class="active">Troubleshooting</a>
+  </aside>
+  <main class="doc-main">
+    <article class="doc">
+<h1 id="troubleshooting-amp-faq">Troubleshooting &amp; FAQ</h1>
+<h2 id="quotagent-39claude-code39-is-not-available-using-the-offline-mockagentadapterquot">&quot;Agent &#39;claude-code&#39; is not available — using the offline MockAgentAdapter&quot;</h2>
+<p>The real adapter couldn&#39;t be used, so SkillCI fell back to the mock. Checklist:</p>
+<ul>
+<li>Is the <code>claude</code> binary on PATH? <code>command -v claude</code>.</li>
+<li>Is it authenticated? Run <code>claude -p &quot;say hi&quot;</code> manually — if that works, the
+adapter will too (subscription/OAuth is fine; no API key needed).</li>
+<li>For Codex you additionally need <code>OPENAI_API_KEY</code>; for Cursor, the
+<code>cursor-agent</code> binary.</li>
+</ul>
+<h2 id="the-run-uses-the-mock-even-though-claude-works">The run uses the mock even though <code>claude</code> works</h2>
+<p><code>run</code> falls back to <strong>demo mode</strong> when <code>--baseline</code> <em>or</em> <code>--candidate</code> is
+missing. Pass both directories for a live evaluation.</p>
+<h2 id="the-agent-runs-but-doesn39t-edit-files-every-task-quotfailsquot-objective-checks">The agent runs but doesn&#39;t edit files / every task &quot;fails&quot; objective checks</h2>
+<p>The Claude adapter passes <code>--dangerously-skip-permissions</code> precisely to avoid
+this (headless <code>claude -p</code> is otherwise default-deny on tools). If you&#39;ve
+customized the invocation, ensure that flag is present — without it the agent
+can&#39;t write files or run commands.</p>
+<h2 id="the-judge-is-always-skipped">The judge is always skipped</h2>
+<p>The judge needs a backend:</p>
+<ul>
+<li>Set <code>ANTHROPIC_API_KEY</code> to use the <strong>SDK</strong> judge, <strong>or</strong></li>
+<li>ensure the <code>claude</code> binary is present (and you&#39;re judging <code>claude-code</code>) to use
+the <strong>CLI</strong> judge automatically.</li>
+</ul>
+<p>Also confirm the task actually has a <code>judgeRubric</code> — no rubric means no judging
+(the dimension is dropped by design).</p>
+<h2 id="verdict-flips-between-runs-cost-numbers-wobble">Verdict flips between runs / cost numbers wobble</h2>
+<p>Expected. Real agent runs are <strong>non-deterministic</strong> — token cost especially. A
+single live verdict is a signal, not gospel. Use the deterministic offline demo
+for reproducible checks, and for automated promotion lean on hard objective
+regressions plus multi-run averaging. See
+<a href="concepts.html#a-note-on-determinism">Concepts → determinism</a>.</p>
+<h2 id="a-command-quothangsquot-or-hits-its-timeout">A command &quot;hangs&quot; or hits its timeout</h2>
+<p>Per-task budget is <code>timeoutMs</code> (default 120s). On timeout, SkillCI SIGKILLs the
+whole <strong>process group</strong>, so even a shell that forked a child is reclaimed
+promptly; the check is reported as a non-zero/timed-out result. If your task
+legitimately needs longer, raise <code>timeoutMs</code> in the <code>task.json</code>.</p>
+<h2 id="npm-ci-fails-in-ci"><code>npm ci</code> fails in CI</h2>
+<p>Ensure <code>package-lock.json</code> is committed and in sync with <code>package.json</code>. The CI
+workflow uses <code>npm ci</code>, which requires a matching lockfile.</p>
+<h2 id="github-actions-deprecation-warning-about-node-20">GitHub Actions deprecation warning about Node 20</h2>
+<p>A non-blocking warning that <code>actions/checkout</code>/<code>setup-node</code> run on the Node 20
+<strong>action runtime</strong> (unrelated to your test matrix). Bump action versions when a
+Node-24-compatible release is available; nothing breaks today.</p>
+<h2 id="quotfixture-directory-does-not-existquot">&quot;fixture directory does not exist&quot;</h2>
+<p><code>fixtureDir</code> in <code>task.json</code> is resolved <strong>relative to the task file&#39;s own
+directory</strong>. Use <code>&quot;.&quot;</code> for &quot;the fixture lives next to this <code>task.json</code>,&quot; and
+make sure the fixture files are present.</p>
+<h2 id="tests-pass-locally-but-fail-in-ci">Tests pass locally but fail in CI</h2>
+<p>CI is a different (often slower) environment with a different <code>/bin/sh</code> (dash on
+Ubuntu). Timing- and shell-sensitive tests can behave differently — give such
+tests explicit budgets and avoid relying on shell-specific behavior. (The sandbox
+timeout test is a worked example: it needed process-group kill to be portable.)</p>
+<h2 id="where-do-i-see-the-full-report">Where do I see the full report?</h2>
+<p><code>skillci run</code> prints a colorized terminal report. The orchestrator also produces
+markdown and JSON reports (<code>report</code> module) for programmatic use.</p>
+<h2 id="still-stuck">Still stuck?</h2>
+<p>Open an issue (templates provided) with the command, the agent, offline-vs-live,
+and the output. For security issues, see <a href="https://github.com/doramirdor/skillci/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+
+    </article>
+    <nav class="doc-pager"><a class="prv" href="architecture.html"><span class="k">Previous</span><span class="t">Architecture</span></a><span></span></nav>
+  </main>
+</div>
+
+<footer class="footer"><div class="inner">
+  <img src="../assets/logo.svg" alt="" />
+  <span>SkillCI — CI for your AI config</span>
+  <span class="sp"></span>
+  <a href="../">Home</a>
+  <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  <a href="https://github.com/doramirdor/skillci/blob/main/LICENSE">MIT</a>
+</div></footer>
+</body>
+</html>

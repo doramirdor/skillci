@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture · SkillCI Docs</title>
+<meta name="description" content="SkillCI documentation — Architecture." />
+<link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../styles.css" />
+<style>
+.doc-shell{max-width:1200px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px 1fr;gap:52px}
+.doc-side{position:sticky;top:84px;align-self:start}
+.doc-side .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 12px;padding-left:12px}
+.doc-side a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-size:14.5px;font-weight:500;border-left:2px solid transparent}
+.doc-side a:hover{background:rgba(0,0,0,.04);color:var(--ink);text-decoration:none}
+.doc-side a.active{color:var(--accent-ink);background:#eef0fe;font-weight:600}
+.doc-main{min-width:0}
+.doc{max-width:760px}
+.doc>:first-child{margin-top:0}
+.doc h1{font-size:clamp(32px,4.5vw,44px);line-height:1.1;letter-spacing:-.025em;font-weight:700;margin:0 0 22px}
+.doc h2{font-size:24px;letter-spacing:-.015em;font-weight:650;margin:46px 0 14px;padding-top:26px;border-top:1px solid var(--line-2);scroll-margin-top:80px}
+.doc h3{font-size:18.5px;font-weight:650;margin:30px 0 10px;scroll-margin-top:80px}
+.doc p,.doc li{font-size:16.5px;line-height:1.75;color:#2b2b2f}
+.doc a{color:var(--accent);font-weight:500}
+.doc strong{color:var(--ink);font-weight:650}
+.doc ul,.doc ol{padding-left:22px}.doc li{margin:6px 0}
+.doc code{font-family:var(--mono);font-size:.85em;background:var(--code-bg);padding:2px 6px;border-radius:6px;color:var(--ink)}
+.doc pre{background:var(--code-bg);border:1px solid var(--line-2);border-radius:12px;padding:18px 20px;overflow-x:auto;margin:18px 0}
+.doc pre code{background:none;padding:0;font-size:13.5px;line-height:1.65;color:#1d1d1f}
+.doc blockquote{margin:18px 0;padding:6px 18px;border-left:3px solid var(--accent);color:var(--ink-2);background:#fafaff;border-radius:0 10px 10px 0}
+.doc blockquote p{margin:6px 0}
+.doc table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.doc th,.doc td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.doc th{background:#fcfcfd;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);font-weight:600}
+.doc tr:last-child td{border-bottom:0}
+.doc hr{border:0;border-top:1px solid var(--line-2);margin:36px 0}
+.doc img{max-width:100%;border-radius:10px}
+.doc-pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line-2)}
+.doc-pager>a{flex:1;border:1px solid var(--line);border-radius:12px;padding:14px 18px;color:var(--ink);transition:box-shadow .2s var(--ease),border-color .2s var(--ease)}
+.doc-pager>a:hover{box-shadow:var(--shadow-sm);border-color:rgba(0,0,0,.22);text-decoration:none}
+.doc-pager .nxt{text-align:right}
+.doc-pager .k{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+.doc-pager .t{font-weight:600;font-size:15px}
+@media(max-width:900px){.doc-shell{grid-template-columns:1fr;gap:22px;padding-top:84px}
+  .doc-side{position:static;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:18px;border-bottom:1px solid var(--line-2)}
+  .doc-side .lbl{width:100%}.doc-side a{border-left:0}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="inner">
+  <a class="brand" href="../"><img src="../assets/logo.svg" alt="" /> Skill<b>CI</b></a>
+  <span class="sp"></span>
+  <nav class="links">
+    <a href="index.html">Docs</a>
+    <a class="cta" href="https://github.com/doramirdor/skillci">GitHub</a>
+  </nav>
+</div></header>
+
+<div class="doc-shell">
+  <aside class="doc-side">
+    <p class="lbl">Documentation</p>
+      <a href="index.html">Overview</a>
+      <a href="getting-started.html">Getting Started</a>
+      <a href="concepts.html">Concepts</a>
+      <a href="cli-reference.html">CLI Reference</a>
+      <a href="writing-tasks.html">Writing Tasks</a>
+      <a href="scoring.html">Scoring</a>
+      <a href="agents-and-auth.html">Agents & Auth</a>
+      <a href="ci-integration.html">CI Integration</a>
+      <a href="architecture.html" class="active">Architecture</a>
+      <a href="troubleshooting.html">Troubleshooting</a>
+  </aside>
+  <main class="doc-main">
+    <article class="doc">
+<h1 id="architecture">Architecture</h1>
+<p>SkillCI is a set of small, single-responsibility modules under <code>src/&lt;module&gt;/</code>,
+each with colocated <code>*.test.ts</code>, all compiling against the shared contracts in
+<a href="https://github.com/doramirdor/skillci/blob/main/src/core/contracts.ts"><code>src/core/contracts.ts</code></a>.</p>
+<h2 id="module-map">Module map</h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Key exports</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>core</code></td>
+<td>Canonical types + zod schemas for the whole domain.</td>
+<td><code>Task</code>, <code>ConfigSet</code>, <code>ObjectiveCheck</code>, <code>AgentRunResult</code>, <code>Score</code>, <code>Verdict</code>, <code>Comparison</code>, <code>Thresholds</code>, <code>AgentAdapter</code></td>
+</tr>
+<tr>
+<td><code>artifacts</code></td>
+<td>Discover &amp; normalize agent config; diff config sets.</td>
+<td><code>discoverConfigSet</code>, <code>applyConfigSet</code>, <code>diffConfigSets</code></td>
+</tr>
+<tr>
+<td><code>sandbox</code></td>
+<td>Isolated fixture workdirs, command exec (timeout + process-group kill), file diffs.</td>
+<td><code>createSandbox</code>, <code>withSandbox</code>, <code>LocalSandboxBackend</code></td>
+</tr>
+<tr>
+<td><code>agents</code></td>
+<td>Agent adapters + availability/error helpers.</td>
+<td><code>ClaudeCodeAdapter</code>, <code>CursorAdapter</code>, <code>CodexAdapter</code>, <code>MockAgentAdapter</code>, <code>getAdapter</code></td>
+</tr>
+<tr>
+<td><code>tasks</code></td>
+<td>Load &amp; validate task suites and fixtures.</td>
+<td><code>loadTasks</code>, <code>getSampleTasks</code></td>
+</tr>
+<tr>
+<td><code>scoring</code></td>
+<td>Objective checks, LLM judge (SDK/CLI), cost, composite.</td>
+<td><code>runObjectiveChecks</code>, <code>judgeWithLLM</code>, <code>claudeCliJudge</code>, <code>costMetrics</code>, <code>composite</code>, <code>computeScore</code></td>
+</tr>
+<tr>
+<td><code>compare</code></td>
+<td>Aggregate scores → deltas → verdict; promotion rule.</td>
+<td><code>compareOutcomes</code>, <code>shouldPromote</code></td>
+</tr>
+<tr>
+<td><code>report</code></td>
+<td>Render JSON / markdown / colorized terminal reports.</td>
+<td><code>renderTerminalReport</code>, <code>renderMarkdownReport</code>, <code>renderJsonReport</code></td>
+</tr>
+<tr>
+<td><code>pr</code></td>
+<td>Open a GitHub PR via <code>gh</code>, gated on verdict (dry-run default).</td>
+<td>PR opener</td>
+</tr>
+<tr>
+<td><code>orchestrator</code></td>
+<td>Wire a full baseline-vs-candidate run.</td>
+<td><code>runEvaluation</code>, <code>runDemo</code></td>
+</tr>
+<tr>
+<td><code>cli</code></td>
+<td>The <code>skillci run|validate|tasks</code> commands.</td>
+<td>bin entry</td>
+</tr>
+</tbody></table>
+<h2 id="data-flow-one-run">Data flow (one <code>run</code>)</h2>
+<pre><code>discoverConfigSet(baseline) ─┐
+discoverConfigSet(candidate) ┘
+                             │
+   for each task:            ▼
+     ┌─────────────── runOneSide(baseline) ───────────────┐
+     │ createSandbox(fixture) → applyConfigSet            │
+     │ → adapter.run(claude -p …) → AgentRunResult        │
+     │ → computeScore:                                    │
+     │     runObjectiveChecks · judge · costMetrics       │
+     │     → composite → Score                            │
+     └────────────────────────────────────────────────────┘
+     (same for candidate, scored RELATIVE to baseline cost)
+                             │
+   compareOutcomes(baseline, candidate, thresholds)
+                             │
+              Comparison { verdict, regressions, deltas }
+                             │
+        renderReport(…)  +  shouldPromote() → pr.open() / dry-run
+                             │
+              CLI exit: non-zero iff verdict === &#39;regressed&#39;
+</code></pre>
+<h2 id="design-principles">Design principles</h2>
+<ul>
+<li><strong>One source of truth.</strong> Every module compiles against <code>core/contracts.ts</code>
+(types + zod). Schemas validate at the boundaries (task loading, config
+discovery, judge output) so bad data fails fast with a typed error.</li>
+<li><strong>Offline by default.</strong> The <code>MockAgentAdapter</code> makes the entire pipeline run
+with no network/keys — that&#39;s what tests and the demo use, and the fallback
+when a real agent is unavailable.</li>
+<li><strong>Graceful degradation.</strong> Real adapters and the judge never throw to crash a
+run — missing CLI/key → typed unavailability or a dropped (re-weighted)
+dimension.</li>
+<li><strong>Fail-closed gate.</strong> <code>compare</code> treats any objective drop, over-threshold
+per-task drop, dropped task, or non-finite score as a hard regression; promotion
+requires <code>improved</code> with none of those.</li>
+<li><strong>Sandboxes are disposable.</strong> Each run gets a fresh recursive copy of the
+fixture (minus <code>.git</code>/<code>node_modules</code>) under <code>os.tmpdir()</code>, always disposed —
+even on throw (<code>withSandbox</code>). Command timeouts kill the whole <strong>process group</strong>
+so a forked grandchild can&#39;t keep the run alive.</li>
+<li><strong>Pluggable backends/backplanes.</strong> <code>SandboxBackend</code> (local today, container
+later), <code>AgentAdapter</code> (per agent), and the judge <code>JudgeFn</code> (SDK or CLI) are all
+swappable behind interfaces.</li>
+</ul>
+<h2 id="testing-model">Testing model</h2>
+<ul>
+<li>Unit tests are colocated and offline. CLIs are never spawned for real in unit
+tests — <code>execa</code> is mocked to pin invocation contracts.</li>
+<li><code>compare</code>, <code>composite</code>, and the gate are exhaustively unit-tested
+(deterministic).</li>
+<li>The offline demo (<code>npm run demo</code>) is an end-to-end smoke that doubles as a CI
+gate. See <a href="ci-integration.html">CI Integration</a>.</li>
+</ul>
+
+    </article>
+    <nav class="doc-pager"><a class="prv" href="ci-integration.html"><span class="k">Previous</span><span class="t">CI Integration</span></a><a class="nxt" href="troubleshooting.html"><span class="k">Next</span><span class="t">Troubleshooting</span></a></nav>
+  </main>
+</div>
+
+<footer class="footer"><div class="inner">
+  <img src="../assets/logo.svg" alt="" />
+  <span>SkillCI — CI for your AI config</span>
+  <span class="sp"></span>
+  <a href="../">Home</a>
+  <a href="https://github.com/doramirdor/skillci">GitHub</a>
+  <a href="https://github.com/doramirdor/skillci/blob/main/LICENSE">MIT</a>
+</div></footer>
+</body>
+</html>
