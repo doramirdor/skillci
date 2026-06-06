@@ -6,7 +6,7 @@ Set FontSize 16
 Set Width 1180
 Set Height 820
 Set Padding 26
-Set Theme "Catppuccin Mocha"
+Set Theme "Catppuccin Latte"
 Set TypingSpeed 40ms
 
 # Hidden setup: cd + alias so the visible commands read `skillci`.

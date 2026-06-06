@@ -1,42 +1,30 @@
 <svg width="1280" height="320" viewBox="0 0 1280 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SkillCI — CI for your AI config">
   <defs>
-    <linearGradient id="bbg" x1="0" y1="0" x2="1280" y2="320" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0B1220"/>
-      <stop offset="1" stop-color="#0F172A"/>
-    </linearGradient>
-    <linearGradient id="bacc" x1="120" y1="80" x2="320" y2="260" gradientUnits="userSpaceOnUse">
+    <linearGradient id="mark" x1="120" y1="80" x2="320" y2="260" gradientUnits="userSpaceOnUse">
       <stop stop-color="#22D3EE"/>
       <stop offset="1" stop-color="#6366F1"/>
     </linearGradient>
-    <linearGradient id="word" x1="430" y1="120" x2="430" y2="200" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F8FAFC"/>
-      <stop offset="1" stop-color="#CBD5E1"/>
-    </linearGradient>
   </defs>
 
-  <rect width="1280" height="320" rx="28" fill="url(#bbg)"/>
+  <!-- light canvas -->
+  <rect width="1280" height="320" rx="28" fill="#FFFFFF"/>
+  <rect x="0.5" y="0.5" width="1279" height="319" rx="27.5" stroke="#000000" stroke-opacity="0.08"/>
 
-  <!-- faint grid -->
-  <g stroke="#1E293B" stroke-width="1" opacity="0.6">
-    <path d="M0 80 H1280 M0 160 H1280 M0 240 H1280"/>
-  </g>
-
-  <!-- icon mark -->
+  <!-- icon mark (dark app-icon badge, brand gradient) -->
   <g transform="translate(96,72) scale(0.69)">
-    <rect x="8" y="8" width="240" height="240" rx="52" fill="#111A2E"/>
-    <rect x="8.5" y="8.5" width="239" height="239" rx="51.5" stroke="url(#bacc)" stroke-opacity="0.5"/>
-    <g stroke="url(#bacc)" stroke-width="14" stroke-linecap="round" fill="none">
+    <rect x="8" y="8" width="240" height="240" rx="52" fill="#0F172A"/>
+    <g stroke="url(#mark)" stroke-width="14" stroke-linecap="round" fill="none">
       <path d="M84 64 V112 Q84 140 112 140 H128"/>
       <path d="M172 64 V112 Q172 140 144 140 H128"/>
       <path d="M128 140 V176"/>
     </g>
-    <circle cx="84" cy="60" r="16" fill="#111A2E" stroke="url(#bacc)" stroke-width="12"/>
-    <circle cx="172" cy="60" r="16" fill="#111A2E" stroke="url(#bacc)" stroke-width="12"/>
-    <circle cx="128" cy="192" r="30" fill="url(#bacc)"/>
+    <circle cx="84" cy="60" r="16" fill="#0F172A" stroke="url(#mark)" stroke-width="12"/>
+    <circle cx="172" cy="60" r="16" fill="#0F172A" stroke="url(#mark)" stroke-width="12"/>
+    <circle cx="128" cy="192" r="30" fill="url(#mark)"/>
     <path d="M114 192 L124 202 L143 182" stroke="#0F172A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   </g>
 
-  <!-- wordmark -->
-  <text x="320" y="172" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="86" font-weight="800" fill="url(#word)" letter-spacing="-2">Skill<tspan fill="#22D3EE">CI</tspan></text>
-  <text x="324" y="222" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="27" font-weight="500" fill="#94A3B8">CI for your AI config — test it before you trust it.</text>
+  <!-- wordmark + tagline (dark on light) -->
+  <text x="320" y="172" font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="86" font-weight="800" fill="#1D1D1F" letter-spacing="-2.5">Skill<tspan fill="#4F46E5">CI</tspan></text>
+  <text x="324" y="222" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="26" font-weight="500" fill="#6E6E73">CI for your AI config — test it before you trust it.</text>
 </svg>

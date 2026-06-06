@@ -57,6 +57,20 @@ function rewriteLinks(html) {
   return html.replace(/href="([^"]+)"/g, (m, h) => `href="${rewriteHref(h)}"`);
 }
 
+function buildToc(html) {
+  const items = [];
+  const re = /<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const text = m[3].replace(/<[^>]+>/g, '').trim();
+    items.push({ level: Number(m[1]), id: m[2], text });
+  }
+  if (items.length < 2) return '';
+  const links = items.map((it) =>
+    `      <a class="lvl-${it.level}" href="#${it.id}">${it.text}</a>`).join('\n');
+  return `  <nav class="doc-toc">\n    <p class="lbl">On this page</p>\n${links}\n  </nav>`;
+}
+
 function sidebar(currentSlug) {
   return pages.map((p) => {
     const active = p.slug === currentSlug ? ' class="active"' : '';
@@ -72,7 +86,14 @@ function pager(prev, next) {
 }
 
 const DOC_CSS = `
-.doc-shell{max-width:1200px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px 1fr;gap:52px}
+.doc-shell{max-width:1240px;margin:0 auto;padding:96px 24px 64px;display:grid;grid-template-columns:236px minmax(0,1fr);gap:52px}
+.doc-shell.has-toc{grid-template-columns:236px minmax(0,1fr) 200px}
+.doc-toc{position:sticky;top:84px;align-self:start;font-size:13px}
+.doc-toc .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 10px}
+.doc-toc a{display:block;padding:5px 0 5px 14px;color:var(--ink-3);border-left:2px solid var(--line-2);line-height:1.4}
+.doc-toc a:hover{color:var(--ink);text-decoration:none}
+.doc-toc a.lvl-3{padding-left:26px;font-size:12.5px}
+.doc-toc a.active{color:var(--accent-ink);border-left-color:var(--accent);font-weight:600}
 .doc-side{position:sticky;top:84px;align-self:start}
 .doc-side .lbl{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);font-weight:600;margin:0 0 12px;padding-left:12px}
 .doc-side a{display:block;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-size:14.5px;font-weight:500;border-left:2px solid transparent}
@@ -105,12 +126,13 @@ const DOC_CSS = `
 .doc-pager .nxt{text-align:right}
 .doc-pager .k{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
 .doc-pager .t{font-weight:600;font-size:15px}
-@media(max-width:900px){.doc-shell{grid-template-columns:1fr;gap:22px;padding-top:84px}
+@media(max-width:1100px){.doc-shell.has-toc{grid-template-columns:236px minmax(0,1fr)} .doc-toc{display:none}}
+@media(max-width:900px){.doc-shell,.doc-shell.has-toc{grid-template-columns:1fr;gap:22px;padding-top:84px}
   .doc-side{position:static;display:flex;flex-wrap:wrap;gap:6px;padding-bottom:18px;border-bottom:1px solid var(--line-2)}
   .doc-side .lbl{width:100%}.doc-side a{border-left:0}}
 `;
 
-function tpl({ title, label, slug, body, prev, next }) {
+function tpl({ title, label, slug, body, prev, next, toc }) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -135,7 +157,7 @@ function tpl({ title, label, slug, body, prev, next }) {
   </nav>
 </div></header>
 
-<div class="doc-shell">
+<div class="doc-shell${toc ? ' has-toc' : ''}">
   <aside class="doc-side">
     <p class="lbl">Documentation</p>
 ${sidebar(slug)}
@@ -146,6 +168,7 @@ ${body}
     </article>
     ${pager(prev, next)}
   </main>
+${toc}
 </div>
 
 <footer class="footer"><div class="inner">
@@ -156,6 +179,20 @@ ${body}
   <a href="${REPO}">GitHub</a>
   <a href="${REPO}/blob/main/LICENSE">MIT</a>
 </div></footer>
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.doc-toc a'));
+  if(!links.length||!('IntersectionObserver'in window))return;
+  var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){links.forEach(function(l){l.classList.remove('active');});
+        var a=map[e.target.id];if(a)a.classList.add('active');}
+    });
+  },{rootMargin:'-80px 0px -70% 0px',threshold:0});
+  document.querySelectorAll('.doc h2[id],.doc h3[id]').forEach(function(h){io.observe(h);});
+})();
+</script>
 </body>
 </html>
 `;
@@ -167,6 +204,7 @@ for (let i = 0; i < pages.length; i++) {
   const md = readFileSync(join(DOCS, p.src), 'utf8');
   let body = marked.parse(md);
   body = addHeadingIds(body);
+  const toc = buildToc(body);
   body = rewriteLinks(body);
   const html = tpl({
     title: p.slug === 'index' ? 'Documentation' : p.label,
@@ -175,6 +213,7 @@ for (let i = 0; i < pages.length; i++) {
     body,
     prev: i > 0 ? pages[i - 1] : null,
     next: i < pages.length - 1 ? pages[i + 1] : null,
+    toc,
   });
   writeFileSync(join(OUT, fileFor(p.slug)), html);
   count++;
